@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/viktorkharts/projector/models"
 )
 
 func init() {
@@ -23,24 +24,24 @@ var addProjectCmd = &cobra.Command{
 }
 
 func addProject(cmd *cobra.Command, args []string) {
-	var fd FileData
+	var fd models.FileData
 
 	pName := args[0]
 	if len(args) == 0 {
 		pName = "New Project"
 	}
 
-	p := Project{
+	p := models.Project{
 		Name: pName,
-		Tasks: []Task{
+		Tasks: []models.Task{
 			{
 				Value:      fmt.Sprintf("Project %s initiated.", args[0]),
-				isComplete: false,
+				IsComplete: false,
 			},
 		},
 	}
 
-	storage := os.Getenv("HOME") + "/projector-storage"
+	storage := os.Getenv("HOME") + "/projector-storage.json"
 	f, err := os.ReadFile(storage)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {

@@ -1,32 +1,16 @@
 package cmd
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
+	"reflect"
 
 	"github.com/spf13/cobra"
+	"github.com/viktorkharts/projector/models"
+	"github.com/viktorkharts/projector/storage"
 )
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-}
-
-type FileData struct {
-	SelectedProject string
-	Projects        []Project
-}
-
-type Project struct {
-	Name  string
-	Tasks []Task
-}
-
-type Task struct {
-	Value      string
-	isComplete bool
 }
 
 var listCmd = &cobra.Command{
@@ -38,32 +22,15 @@ var listCmd = &cobra.Command{
 }
 
 func list(cmd *cobra.Command, args []string) {
-	var fd FileData
-
-	storage := os.Getenv("HOME") + "/projector-storage"
-	f, err := os.ReadFile(storage)
+	fd, err := storage.ReadStorage()
 	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			_, err := os.Create(storage)
-			if err != nil {
-				fmt.Printf("Projector Error: failed to create a storage file.\n%s\n", err.Error())
-				os.Exit(1)
-			}
-			list(cmd, args)
-		} else {
-			fmt.Printf("Projector Error: failed to read storage file.\n%s\n", err.Error())
-			os.Exit(1)
-		}
-	}
-
-	if len(f) == 0 {
-		fmt.Printf("Projector Info: you have no projects.\n")
+		fmt.Println(err.Error())
 		return
 	}
 
-	if err = json.Unmarshal(f, &fd); err != nil {
-		fmt.Printf("Projector Error: failed to parse file byte data into json.\n%s\n", err.Error())
-		os.Exit(1)
+	if reflect.DeepEqual(fd, models.FileData{}) {
+		fmt.Printf("Projector Info: you have no projects created.\n")
+		return
 	}
 
 	if fd.SelectedProject == "" {
@@ -76,7 +43,7 @@ func list(cmd *cobra.Command, args []string) {
 			project := proj
 
 			for _, task := range project.Tasks {
-				if !task.isComplete {
+				if !task.IsComplete {
 					fmt.Println(task.Value)
 				}
 			}
