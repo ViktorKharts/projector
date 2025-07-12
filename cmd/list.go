@@ -15,15 +15,25 @@ func init() {
 }
 
 type FileData struct {
-	Project string
-	Tasks   []string
+	SelectedProject string
+	Projects        []Project
+}
+
+type Project struct {
+	Name  string
+	Tasks []Task
+}
+
+type Task struct {
+	Value      string
+	isComplete bool
 }
 
 var listCmd = &cobra.Command{
 	Use:     "list",
 	Short:   "List available projects.",
 	Long:    "List available projects.",
-	Aliases: []string{"l"},
+	Aliases: []string{"l", "li", "ls", "lis", "lsi", "lsit", "lits", "list"},
 	Run:     list,
 }
 
@@ -46,10 +56,32 @@ func list(cmd *cobra.Command, args []string) {
 		}
 	}
 
+	if len(f) == 0 {
+		fmt.Printf("Projector Info: you have no projects.\n")
+		return
+	}
+
 	if err = json.Unmarshal(f, &fd); err != nil {
 		fmt.Printf("Projector Error: failed to parse file byte data into json.\n%s\n", err.Error())
 		os.Exit(1)
 	}
 
-	fmt.Println(fd)
+	if fd.SelectedProject == "" {
+		fmt.Printf("Projector Info: please select a project to work on.\n")
+		return
+	}
+
+	for _, proj := range fd.Projects {
+		if proj.Name == fd.SelectedProject {
+			project := proj
+
+			for _, task := range project.Tasks {
+				if !task.isComplete {
+					fmt.Println(task.Value)
+				}
+			}
+
+			return
+		}
+	}
 }
