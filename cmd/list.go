@@ -22,7 +22,7 @@ var listCmd = &cobra.Command{
 }
 
 func list(cmd *cobra.Command, args []string) {
-	fd, err := storage.ReadStorage()
+	fd, err := storage.Read()
 	if err != nil {
 		fmt.Println(err.Error())
 		return

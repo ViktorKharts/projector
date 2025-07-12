@@ -9,7 +9,7 @@ import (
 	"github.com/viktorkharts/projector/models"
 )
 
-func ReadStorage() (models.FileData, error) {
+func Read() (models.FileData, error) {
 	fd := models.FileData{}
 	storage := os.Getenv("HOME") + "/projector-storage.json"
 
@@ -21,7 +21,7 @@ func ReadStorage() (models.FileData, error) {
 				return fd, &storageError{"failed to create a storage file", err.Error()}
 			}
 
-			ReadStorage()
+			Read()
 		} else {
 			return fd, &storageError{"failed to read the storage file", err.Error()}
 		}
