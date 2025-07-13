@@ -43,8 +43,9 @@ func addTask(cmd *cobra.Command, args []string) {
 	}
 
 	p.Tasks = append(p.Tasks, t)
+	fd.Projects = append(fd.Projects, p)
 
-	if err := storage.Write(fd, p); err != nil {
+	if err := storage.Write(fd); err != nil {
 		fmt.Printf("%s", err.Error())
 	}
 }

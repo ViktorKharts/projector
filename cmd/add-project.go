@@ -42,8 +42,10 @@ func addProject(cmd *cobra.Command, args []string) {
 	}
 
 	fd, _ = storage.Read()
+	fd.SelectedProject = p.Name
+	fd.Projects = append(fd.Projects, p)
 
-	if err := storage.Write(fd, p); err != nil {
+	if err := storage.Write(fd); err != nil {
 		fmt.Printf("%s", err.Error())
 	}
 }
