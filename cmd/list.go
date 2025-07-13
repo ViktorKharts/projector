@@ -22,33 +22,26 @@ var listCmd = &cobra.Command{
 }
 
 func list(cmd *cobra.Command, args []string) {
-	fd, err := storage.Read()
+	s, err := storage.Read()
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
 
-	if reflect.DeepEqual(fd, models.FileData{}) {
+	if reflect.DeepEqual(s, models.Storage{}) {
 		fmt.Printf("Projector Info: you have no projects created.\n")
 		return
 	}
 
-	if fd.SelectedProject == "" {
+	if s.SelectedProject == "" {
 		fmt.Printf("Projector Info: please select a project to work on.\n")
 		return
 	}
 
-	for _, proj := range fd.Projects {
-		if proj.Name == fd.SelectedProject {
-			project := proj
-
-			for _, task := range project.Tasks {
-				if !task.IsComplete {
-					fmt.Println(task.Value)
-				}
-			}
-
-			return
+	p, _ := s.Projects[s.SelectedProject]
+	for _, t := range p.Tasks {
+		if !t.IsComplete {
+			fmt.Println(t.Value)
 		}
 	}
 }

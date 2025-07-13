@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
+
 	"github.com/viktorkharts/projector/models"
 	"github.com/viktorkharts/projector/storage"
 )
@@ -21,31 +23,36 @@ var addProjectCmd = &cobra.Command{
 }
 
 func addProject(cmd *cobra.Command, args []string) {
-	fd := models.FileData{
-		SelectedProject: "",
-		Projects:        []models.Project{},
+	if len(args) == 0 {
+		fmt.Printf("Projector Info: please provide a name for a new project.\n")
+		return
 	}
 
 	pName := args[0]
-	if len(args) == 0 {
-		pName = "New Project"
-	}
 
 	p := models.Project{
+		Id:   uuid.NewString(),
 		Name: pName,
 		Tasks: []models.Task{
 			{
+				Id:         uuid.NewString(),
 				Value:      fmt.Sprintf("Project %s initiated.", args[0]),
 				IsComplete: false,
 			},
 		},
 	}
 
-	fd, _ = storage.Read()
-	fd.SelectedProject = p.Name
-	fd.Projects = append(fd.Projects, p)
+	s, _ := storage.Read()
 
-	if err := storage.Write(fd); err != nil {
+	if _, ok := s.Projects[pName]; ok {
+		fmt.Printf("Projector Info: '%s' project already exists.\n", pName)
+		return
+	}
+
+	s.SelectedProject = p.Name
+	s.Projects[pName] = p
+
+	if err := storage.Write(s); err != nil {
 		fmt.Printf("%s", err.Error())
 	}
 }

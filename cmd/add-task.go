@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/viktorkharts/projector/models"
 	"github.com/viktorkharts/projector/storage"
@@ -21,31 +22,25 @@ var addTaskCmd = &cobra.Command{
 }
 
 func addTask(cmd *cobra.Command, args []string) {
-	fd, _ := storage.Read()
+	s, _ := storage.Read()
 
-	if fd.SelectedProject == "" {
+	if s.SelectedProject == "" {
 		fmt.Printf("Projector Info: please select a project to create a task for.\n")
 		fmt.Printf("Projector Info: please make sure you have projects set up.\n")
 		return
 	}
 
 	t := models.Task{
+		Id:         uuid.NewString(),
 		Value:      args[0],
 		IsComplete: false,
 	}
 
-	var p models.Project
-	for _, sp := range fd.Projects {
-		if sp.Name == fd.SelectedProject {
-			p = sp
-			break
-		}
-	}
-
+	p, _ := s.Projects[s.SelectedProject]
 	p.Tasks = append(p.Tasks, t)
-	fd.Projects = append(fd.Projects, p)
+	s.Projects[s.SelectedProject] = p
 
-	if err := storage.Write(fd); err != nil {
+	if err := storage.Write(s); err != nil {
 		fmt.Printf("%s", err.Error())
 	}
 }

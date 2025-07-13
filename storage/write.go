@@ -7,7 +7,7 @@ import (
 	"github.com/viktorkharts/projector/models"
 )
 
-func Write(db models.FileData) error {
+func Write(db models.Storage) error {
 	storage := os.Getenv("HOME") + "/projector-storage.json"
 
 	bd, err := json.Marshal(db)

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	"github.com/viktorkharts/projector/models"
 	"github.com/viktorkharts/projector/storage"
@@ -21,25 +22,29 @@ var addSelectProjectCmd = &cobra.Command{
 }
 
 func selectProject(cmd *cobra.Command, args []string) {
-	fd := models.FileData{
-		SelectedProject: "",
-		Projects:        []models.Project{},
-	}
-
 	if len(args) == 0 {
 		fmt.Printf("Projector Info: please provide a project name you want to select.\n")
 		fmt.Printf("Projector Info: please make sure you have projects set up.\n")
 		return
 	}
 
-	fd, _ = storage.Read()
+	pName := args[0]
+	s, _ := storage.Read()
 
-	// TODO: prevent selecting non-existent project
-	fd.SelectedProject = args[0]
+	if _, ok := s.Projects[pName]; !ok {
+		fmt.Printf("Projector Info: project '%s' doesn't exists.\n", pName)
+		return
+	}
 
-	if err := storage.Write(fd); err != nil {
+	s.Projects[pName] = models.Project{
+		Id:    uuid.NewString(),
+		Name:  pName,
+		Tasks: []models.Task{},
+	}
+
+	if err := storage.Write(s); err != nil {
 		fmt.Printf("%s", err.Error())
 	}
 
-	fmt.Printf("Projector Info: '%s' project selected.\n", fd.SelectedProject)
+	fmt.Printf("Projector Info: '%s' project selected.\n", s.SelectedProject)
 }
