@@ -16,7 +16,7 @@ func init() {
 var addSelectProjectCmd = &cobra.Command{
 	Use:     "select-p",
 	Short:   "Selects a project to work on.",
-	Long:    "Selects a project as an acitve one to create/create/update/delete tasks in.",
+	Long:    "Selects a project as an active one to create/create/update/delete tasks in.",
 	Aliases: []string{"s", "select", "sel", "sp", "selp"},
 	Run:     selectProject,
 }
@@ -24,7 +24,6 @@ var addSelectProjectCmd = &cobra.Command{
 func selectProject(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
 		fmt.Printf("Projector Info: please provide a project name you want to select.\n")
-		fmt.Printf("Projector Info: please make sure you have projects set up.\n")
 		return
 	}
 

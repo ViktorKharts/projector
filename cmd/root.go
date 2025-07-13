@@ -7,6 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// 1. remove project
+// 2. remove task
+// 3. list projects
+
 var rootCmd = &cobra.Command{
 	Use:   "projector",
 	Short: "Projector is a todo cli app",
