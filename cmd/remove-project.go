@@ -14,7 +14,7 @@ func init() {
 var addRemoveProjectCmd = &cobra.Command{
 	Use:     "remove-p",
 	Short:   "Removes a project from the library.",
-	Long:    "Removes a project as an acitve one to create/create/update/delete tasks in.",
+	Long:    "Removes a project and all the associated tasks to it.",
 	Aliases: []string{"rep", "remove", "rm"},
 	Run:     removeProject,
 }

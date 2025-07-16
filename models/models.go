@@ -16,3 +16,7 @@ type Task struct {
 	Value      string
 	IsComplete bool
 }
+
+func (p *Project) OverWriteTasks(t []Task) {
+	p.Tasks = t
+}
