@@ -30,14 +30,18 @@ func addTask(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	t := models.Task{
-		Id:         uuid.NewString(),
-		Value:      args[0],
-		IsComplete: false,
+	p, _ := s.Projects[s.SelectedProject]
+
+	for _, nt := range args {
+		t := models.Task{
+			Id:         uuid.NewString(),
+			Value:      nt,
+			IsComplete: false,
+		}
+
+		p.Tasks = append(p.Tasks, t)
 	}
 
-	p, _ := s.Projects[s.SelectedProject]
-	p.Tasks = append(p.Tasks, t)
 	s.Projects[s.SelectedProject] = p
 
 	if err := storage.Write(s); err != nil {
