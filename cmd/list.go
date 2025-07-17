@@ -39,6 +39,12 @@ func list(cmd *cobra.Command, args []string) {
 	}
 
 	p, _ := s.Projects[s.SelectedProject]
+
+	if len(p.Tasks) == 0 {
+		fmt.Printf("Projector Info: current project contains no tasks.\n")
+		return
+	}
+
 	for _, t := range p.Tasks {
 		if !t.IsComplete {
 			fmt.Println(t.Value)
