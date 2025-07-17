@@ -16,7 +16,7 @@ var addRemoveProjectCmd = &cobra.Command{
 	Use:     "remove-p",
 	Short:   "Removes a project from the library.",
 	Long:    "Removes a project and all the associated tasks to it.",
-	Aliases: []string{"rep", "remove", "rm"},
+	Aliases: []string{"rep", "remove", "rmp"},
 	Run:     removeProject,
 }
 

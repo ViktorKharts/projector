@@ -31,15 +31,9 @@ func addProject(cmd *cobra.Command, args []string) {
 	pName := args[0]
 
 	p := models.Project{
-		Id:   uuid.NewString(),
-		Name: pName,
-		Tasks: []models.Task{
-			{
-				Id:         uuid.NewString(),
-				Value:      fmt.Sprintf("Project %s initiated.", args[0]),
-				IsComplete: false,
-			},
-		},
+		Id:    uuid.NewString(),
+		Name:  pName,
+		Tasks: []models.Task{},
 	}
 
 	s, _ := storage.Read()
