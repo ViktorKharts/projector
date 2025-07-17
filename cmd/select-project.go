@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/google/uuid"
 	"github.com/spf13/cobra"
-	"github.com/viktorkharts/projector/models"
 	"github.com/viktorkharts/projector/storage"
 )
 
@@ -31,15 +30,22 @@ func selectProject(cmd *cobra.Command, args []string) {
 	s, _ := storage.Read()
 
 	if _, ok := s.Projects[pName]; !ok {
-		fmt.Printf("Projector Info: project '%s' doesn't exists.\n", pName)
-		return
+		notFound := true
+
+		for _, p := range s.Projects {
+			if strings.Contains(p.Name, pName) {
+				pName = p.Name
+				notFound = false
+			}
+		}
+
+		if notFound {
+			fmt.Printf("Projector Info: project '%s' doesn't exists.\n", pName)
+			return
+		}
 	}
 
-	s.Projects[pName] = models.Project{
-		Id:    uuid.NewString(),
-		Name:  pName,
-		Tasks: []models.Task{},
-	}
+	s.SelectedProject = pName
 
 	if err := storage.Write(s); err != nil {
 		fmt.Printf("%s", err.Error())
