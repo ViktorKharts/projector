@@ -10,18 +10,18 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(listTasksCmd)
 }
 
-var listCmd = &cobra.Command{
-	Use:     "list",
-	Short:   "List available projects.",
-	Long:    "List available projects.",
-	Aliases: []string{"l", "li", "ls", "lis", "lsi", "lsit", "lits", "list"},
-	Run:     list,
+var listTasksCmd = &cobra.Command{
+	Use:     "list-t",
+	Short:   "List tasks in the current project.",
+	Long:    "List all tasks in the currently selected project.",
+	Aliases: []string{"lt", "lit", "lst", "lsit-t", "lits-t", "list-t"},
+	Run:     listTasks,
 }
 
-func list(cmd *cobra.Command, args []string) {
+func listTasks(cmd *cobra.Command, args []string) {
 	s, err := storage.Read()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -45,9 +45,11 @@ func list(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	c := 1
 	for _, t := range p.Tasks {
 		if !t.IsComplete {
-			fmt.Println(t.Value)
+			fmt.Printf("%d. %s\n", c, t.Value)
+			c += 1
 		}
 	}
 }
