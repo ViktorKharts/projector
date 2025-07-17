@@ -45,11 +45,11 @@ func listTasks(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	c := 1
-	for _, t := range p.Tasks {
+	fmt.Printf("%s tasks:\n", p.Name)
+
+	for i, t := range p.Tasks {
 		if !t.IsComplete {
-			fmt.Printf("%d. %s\n", c, t.Value)
-			c += 1
+			fmt.Printf("%d. %s\n", i+1, t.Value)
 		}
 	}
 }

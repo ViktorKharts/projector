@@ -38,6 +38,8 @@ func listProjects(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	fmt.Printf("Projects:\n")
+
 	c := 1
 	for _, p := range s.Projects {
 		fmt.Printf("%d. %s\n", c, p.Name)
