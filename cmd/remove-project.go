@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/viktorkharts/projector/storage"
@@ -29,8 +30,19 @@ func removeProject(cmd *cobra.Command, args []string) {
 	s, _ := storage.Read()
 
 	if _, ok := s.Projects[pName]; !ok {
-		fmt.Printf("Projector Info: project '%s' doesn't exists.\n", pName)
-		return
+		notFound := true
+
+		for _, p := range s.Projects {
+			if strings.Contains(p.Name, pName) {
+				pName = p.Name
+				notFound = false
+			}
+		}
+
+		if notFound {
+			fmt.Printf("Projector Info: project '%s' doesn't exists.\n", pName)
+			return
+		}
 	}
 
 	delete(s.Projects, pName)
