@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/viktorkharts/projector/models"
@@ -21,6 +22,11 @@ func main() {
 	}
 
 	if m, ok := m.(models.Storage); ok && m.SelectedProject != "" {
+		if err = storage.Write(m); err != nil {
+			fmt.Printf("Error: %v", err)
+			os.Exit(1)
+		}
+
 		fmt.Printf("\n---\nYou chose %s!\n", m.SelectedProject)
 	}
 }

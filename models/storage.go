@@ -50,10 +50,17 @@ func (m Storage) View() string {
 
 	for i, v := range m.Projects {
 		if m.Cursor == i {
+			s.WriteString(" > ")
+		} else if m.Cursor != i {
+			s.WriteString("   ")
+		}
+
+		if m.SelectedProject == m.Projects[i].Name {
 			s.WriteString("(•) ")
 		} else {
 			s.WriteString("( ) ")
 		}
+
 		s.WriteString(v.Name)
 		s.WriteString("\n")
 	}
