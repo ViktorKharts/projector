@@ -12,7 +12,7 @@ import (
 func Read() (models.Storage, error) {
 	s := models.Storage{
 		SelectedProject: "",
-		Projects:        map[string]models.Project{},
+		Projects:        []models.Project{},
 	}
 
 	storage := os.Getenv("HOME") + "/projector-storage.json"
