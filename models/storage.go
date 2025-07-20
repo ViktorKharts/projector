@@ -4,20 +4,27 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/google/uuid"
 )
 
 type Storage struct {
-	SelectedProject string
-	Projects        []Project
-	Cursor          int
+	Cursor           int
+	IsWithinSelected bool
+	IsNewProject     bool
+	SelectedProject  string
+	Projects         []Project
+	textInput        textinput.Model
 }
 
 func (m Storage) Init() tea.Cmd {
-	return nil
+	return textinput.Blink
 }
 
 func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -28,13 +35,13 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.SelectedProject = m.Projects[m.Cursor].Name
 			return m, nil
 
-		case "down", "j":
+		case "j":
 			m.Cursor++
 			if m.Cursor >= len(m.Projects) {
 				m.Cursor = 0
 			}
 
-		case "up", "k":
+		case "k":
 			m.Cursor--
 			if m.Cursor < 0 {
 				m.Cursor = len(m.Projects) - 1
@@ -48,14 +55,55 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.SelectedProject == toDelete.Name {
 				m.SelectedProject = m.Projects[0].Name
 			}
+			if m.Cursor >= 1 {
+				m.Cursor--
+			} else {
+				m.Cursor = 0
+			}
+
+		case "n":
+			m.IsNewProject = true
+
+			ti := textinput.New()
+			ti.Placeholder = "foo bar"
+			ti.Focus()
+			ti.CharLimit = 140
+			ti.Width = 20
+			m.textInput = ti
+
+			return m, nil
+
+		case "esc", "enter":
+			m.IsNewProject = false
+			p := Project{
+				Id:    uuid.NewString(),
+				Name:  m.textInput.Value(),
+				Tasks: []Task{},
+			}
+			m.Projects = append(m.Projects, p)
+			m.textInput = textinput.Model{}
 		}
 	}
 
-	return m, nil
+	if m.IsNewProject {
+		m.textInput, cmd = m.textInput.Update(msg)
+	}
+
+	return m, cmd
 }
 
 func (m Storage) View() string {
 	s := strings.Builder{}
+
+	// Create a new Project
+	if m.IsNewProject {
+		s.WriteString("A new Project has to have a name!\n\n")
+		s.WriteString(m.textInput.View())
+		s.WriteString("\n\n(esc to return)\n")
+		return s.String()
+	}
+
+	// Select Project
 	s.WriteString("These are all the projects you have:\n\n")
 
 	for i, v := range m.Projects {
