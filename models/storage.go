@@ -13,6 +13,7 @@ type Storage struct {
 	Cursor           int
 	IsWithinSelected bool
 	IsNewProject     bool
+	IsProjectEdit    bool
 	SelectedProject  string
 	Projects         []Project
 	textInput        textinput.Model
@@ -73,19 +74,38 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			return m, nil
 
+		case "r":
+			m.IsProjectEdit = true
+
+			ti := textinput.New()
+			ti.SetValue(m.Projects[m.Cursor].Name)
+			ti.Focus()
+			ti.CharLimit = 140
+			ti.Width = 20
+			m.textInput = ti
+
+			return m, nil
+
 		case "esc", "enter":
-			m.IsNewProject = false
-			p := Project{
-				Id:    uuid.NewString(),
-				Name:  m.textInput.Value(),
-				Tasks: []Task{},
+			if m.IsNewProject {
+				m.IsNewProject = false
+				p := Project{
+					Id:    uuid.NewString(),
+					Name:  m.textInput.Value(),
+					Tasks: []Task{},
+				}
+				m.Projects = append(m.Projects, p)
+				m.textInput = textinput.Model{}
 			}
-			m.Projects = append(m.Projects, p)
-			m.textInput = textinput.Model{}
+			if m.IsProjectEdit {
+				m.IsProjectEdit = false
+				m.Projects[m.Cursor].Name = m.textInput.Value()
+				m.textInput = textinput.Model{}
+			}
 		}
 	}
 
-	if m.IsNewProject {
+	if m.IsNewProject || m.IsProjectEdit {
 		m.textInput, cmd = m.textInput.Update(msg)
 	}
 
@@ -98,6 +118,14 @@ func (m Storage) View() string {
 	// Create a new Project
 	if m.IsNewProject {
 		s.WriteString("A new Project has to have a name!\n\n")
+		s.WriteString(m.textInput.View())
+		s.WriteString("\n\n(esc to return)\n")
+		return s.String()
+	}
+
+	// Edit a Project
+	if m.IsProjectEdit {
+		s.WriteString("Here, you can provide a new name for the Project!\n\n")
 		s.WriteString(m.textInput.View())
 		s.WriteString("\n\n(esc to return)\n")
 		return s.String()
