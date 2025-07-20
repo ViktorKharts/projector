@@ -1,6 +1,7 @@
 package models
 
 import (
+	"slices"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -23,9 +24,9 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 
-		case "enter", " ":
+		case "s", " ":
 			m.SelectedProject = m.Projects[m.Cursor].Name
-			return m, tea.Quit
+			return m, nil
 
 		case "down", "j":
 			m.Cursor++
@@ -37,6 +38,15 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Cursor--
 			if m.Cursor < 0 {
 				m.Cursor = len(m.Projects) - 1
+			}
+
+		case "x":
+			toDelete := m.Projects[m.Cursor]
+			m.Projects = slices.DeleteFunc(m.Projects, func(p Project) bool {
+				return p.Id == toDelete.Id
+			})
+			if m.SelectedProject == toDelete.Name {
+				m.SelectedProject = m.Projects[0].Name
 			}
 		}
 	}
