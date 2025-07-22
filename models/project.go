@@ -9,3 +9,7 @@ type Project struct {
 func (p *Project) OverWriteTasks(t []Task) {
 	p.Tasks = t
 }
+
+func (p Project) FilterValue() string {
+	return p.Name
+}

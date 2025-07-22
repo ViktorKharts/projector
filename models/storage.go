@@ -17,8 +17,8 @@ type Storage struct {
 	IsProjectEdit    bool
 	SelectedProject  string
 	Projects         []Project
-	listBubble       list.Model
-	textBubble       textinput.Model
+	ListBubble       list.Model
+	TextBubble       textinput.Model
 }
 
 func (m Storage) Init() tea.Cmd {
@@ -72,7 +72,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ti.Focus()
 			ti.CharLimit = 140
 			ti.Width = 20
-			m.textBubble = ti
+			m.TextBubble = ti
 
 			return m, nil
 
@@ -84,7 +84,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ti.Focus()
 			ti.CharLimit = 140
 			ti.Width = 20
-			m.textBubble = ti
+			m.TextBubble = ti
 
 			return m, nil
 
@@ -93,22 +93,22 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.IsNewProject = false
 				p := Project{
 					Id:    uuid.NewString(),
-					Name:  m.textBubble.Value(),
+					Name:  m.TextBubble.Value(),
 					Tasks: []Task{},
 				}
 				m.Projects = append(m.Projects, p)
-				m.textBubble = textinput.Model{}
+				m.TextBubble = textinput.Model{}
 			}
 			if m.IsProjectEdit {
 				m.IsProjectEdit = false
-				m.Projects[m.Cursor].Name = m.textBubble.Value()
-				m.textBubble = textinput.Model{}
+				m.Projects[m.Cursor].Name = m.TextBubble.Value()
+				m.TextBubble = textinput.Model{}
 			}
 		}
 	}
 
 	if m.IsNewProject || m.IsProjectEdit {
-		m.textBubble, cmd = m.textBubble.Update(msg)
+		m.TextBubble, cmd = m.TextBubble.Update(msg)
 	}
 
 	return m, cmd
@@ -120,7 +120,7 @@ func (m Storage) View() string {
 	// Create a new Project
 	if m.IsNewProject {
 		s.WriteString("A new Project has to have a name!\n\n")
-		s.WriteString(m.textBubble.View())
+		s.WriteString(m.TextBubble.View())
 		s.WriteString("\n\n(esc to return)\n")
 		return s.String()
 	}
@@ -128,7 +128,7 @@ func (m Storage) View() string {
 	// Edit a Project
 	if m.IsProjectEdit {
 		s.WriteString("Here, you can provide a new name for the Project!\n\n")
-		s.WriteString(m.textBubble.View())
+		s.WriteString(m.TextBubble.View())
 		s.WriteString("\n\n(esc to return)\n")
 		return s.String()
 	}
