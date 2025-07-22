@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
@@ -16,7 +17,8 @@ type Storage struct {
 	IsProjectEdit    bool
 	SelectedProject  string
 	Projects         []Project
-	textInput        textinput.Model
+	listBubble       list.Model
+	textBubble       textinput.Model
 }
 
 func (m Storage) Init() tea.Cmd {
@@ -70,7 +72,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ti.Focus()
 			ti.CharLimit = 140
 			ti.Width = 20
-			m.textInput = ti
+			m.textBubble = ti
 
 			return m, nil
 
@@ -82,7 +84,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			ti.Focus()
 			ti.CharLimit = 140
 			ti.Width = 20
-			m.textInput = ti
+			m.textBubble = ti
 
 			return m, nil
 
@@ -91,22 +93,22 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.IsNewProject = false
 				p := Project{
 					Id:    uuid.NewString(),
-					Name:  m.textInput.Value(),
+					Name:  m.textBubble.Value(),
 					Tasks: []Task{},
 				}
 				m.Projects = append(m.Projects, p)
-				m.textInput = textinput.Model{}
+				m.textBubble = textinput.Model{}
 			}
 			if m.IsProjectEdit {
 				m.IsProjectEdit = false
-				m.Projects[m.Cursor].Name = m.textInput.Value()
-				m.textInput = textinput.Model{}
+				m.Projects[m.Cursor].Name = m.textBubble.Value()
+				m.textBubble = textinput.Model{}
 			}
 		}
 	}
 
 	if m.IsNewProject || m.IsProjectEdit {
-		m.textInput, cmd = m.textInput.Update(msg)
+		m.textBubble, cmd = m.textBubble.Update(msg)
 	}
 
 	return m, cmd
@@ -118,7 +120,7 @@ func (m Storage) View() string {
 	// Create a new Project
 	if m.IsNewProject {
 		s.WriteString("A new Project has to have a name!\n\n")
-		s.WriteString(m.textInput.View())
+		s.WriteString(m.textBubble.View())
 		s.WriteString("\n\n(esc to return)\n")
 		return s.String()
 	}
@@ -126,7 +128,7 @@ func (m Storage) View() string {
 	// Edit a Project
 	if m.IsProjectEdit {
 		s.WriteString("Here, you can provide a new name for the Project!\n\n")
-		s.WriteString(m.textInput.View())
+		s.WriteString(m.textBubble.View())
 		s.WriteString("\n\n(esc to return)\n")
 		return s.String()
 	}
