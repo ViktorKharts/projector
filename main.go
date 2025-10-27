@@ -51,8 +51,7 @@ func initializeStorage() (models.Storage, error) {
 	ti.Width = 20
 	s.TextBubble = ti
 
-	numItems := len(s.Projects)
-	items := make([]list.Item, numItems)
+	items := make([]list.Item, len(s.Projects))
 	for i, p := range s.Projects {
 		items[i] = p
 	}

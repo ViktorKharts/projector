@@ -92,9 +92,9 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.IsNewProject {
 				m.IsNewProject = false
 				p := Project{
-					Id:    uuid.NewString(),
-					Name:  m.TextBubble.Value(),
-					Tasks: []Task{},
+					Id:      uuid.NewString(),
+					Name:    m.TextBubble.Value(),
+					Columns: []Column{},
 				}
 				m.Projects = append(m.Projects, p)
 				m.TextBubble = textinput.Model{}
