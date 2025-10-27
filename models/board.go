@@ -73,3 +73,35 @@ func (b Board) View() string {
 
 	return ""
 }
+
+func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
+
+func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
+
+func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
+
+func (b Board) handleCreateColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
+
+func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	return nil, nil
+}
+
+func (b Board) renderBoard() string {
+	return ""
+}
+
+func (b Board) renderTaskForm(t string) string {
+	return ""
+}
+
+func (b Board) renderColumnForm(t string) string {
+	return ""
+}
