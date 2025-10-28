@@ -5,6 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/google/uuid"
 )
 
 type Board struct {
@@ -155,19 +156,114 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "esc":
+		b.Mode = ViewMode
+		return b, nil
+
+	case "enter":
+		if b.TitleInput.Value() != "" {
+			newTask := Task{
+				Id:    uuid.NewString(),
+				Title: b.TitleInput.Value(),
+			}
+			b.Project.Columns[b.CurrentColumnIndex].Tasks = append(
+				b.Project.Columns[b.CurrentColumnIndex].Tasks,
+				newTask,
+			)
+		}
+		b.Mode = ViewMode
+		return b, nil
+
+		// TODO: add handle description
+	}
+
+	if b.FocusedInput == 0 {
+		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	return b, cmd
 }
 
 func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "esc":
+		b.Mode = ViewMode
+		return b, nil
+
+	case "enter":
+		if b.TitleInput.Value() != "" {
+			b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex].Title = b.TitleInput.Value()
+		}
+		b.Mode = ViewMode
+		return b, nil
+
+		// TODO: add handle description
+	}
+
+	if b.FocusedInput == 0 {
+		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	return b, cmd
 }
 
 func (b Board) handleCreateColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "esc":
+		b.Mode = ViewMode
+		return b, nil
+
+	case "enter":
+		if b.TitleInput.Value() != "" {
+			newColumn := Column{
+				Id:    uuid.NewString(),
+				Name:  b.TitleInput.Value(),
+				Tasks: []Task{},
+			}
+			b.Project.Columns = append(
+				b.Project.Columns,
+				newColumn,
+			)
+		}
+		b.Mode = ViewMode
+		return b, nil
+	}
+
+	if b.FocusedInput == 0 {
+		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	return b, cmd
 }
 
 func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "esc":
+		b.Mode = ViewMode
+		return b, nil
+
+	case "enter":
+		if b.TitleInput.Value() != "" {
+			b.Project.Columns[b.CurrentColumnIndex].Name = b.TitleInput.Value()
+		}
+		b.Mode = ViewMode
+		return b, nil
+	}
+
+	if b.FocusedInput == 0 {
+		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	return b, cmd
 }
 
 func (b Board) renderBoard() string {
