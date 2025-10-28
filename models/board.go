@@ -1,6 +1,8 @@
 package models
 
 import (
+	"slices"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -13,7 +15,7 @@ type Board struct {
 	Height             int
 	Mode               BoardMode
 	TitleInput         textinput.Model
-	ColumnNameInpput   textinput.Model
+	ColumnNameInput    textinput.Model
 	FocusedInput       int
 }
 
@@ -75,7 +77,81 @@ func (b Board) View() string {
 }
 
 func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	return nil, nil
+	switch msg.String() {
+	case "esc":
+		return b, tea.Quit
+
+	case "h":
+		b.CurrentColumnIndex--
+		if b.CurrentColumnIndex < 0 {
+			b.CurrentColumnIndex = len(b.Project.Columns) - 1
+		}
+		b.CurrentTaskIndex = 0
+
+	case "l":
+		b.CurrentColumnIndex++
+		if b.CurrentColumnIndex >= len(b.Project.Columns)-1 {
+			b.CurrentColumnIndex = 0
+		}
+		b.CurrentTaskIndex = 0
+
+	case "k":
+		b.CurrentTaskIndex--
+		tasksLength := len(b.Project.Columns[b.CurrentColumnIndex].Tasks)
+		if b.CurrentTaskIndex < 0 {
+			b.CurrentTaskIndex = tasksLength - 1
+		}
+
+	case "j":
+		b.CurrentTaskIndex++
+		tasksLength := len(b.Project.Columns[b.CurrentColumnIndex].Tasks)
+		if b.CurrentTaskIndex >= tasksLength-1 {
+			b.CurrentTaskIndex = 0
+		}
+
+	case "n":
+		b.Mode = CreateTaskMode
+		b.TitleInput = textinput.New()
+		b.TitleInput.Placeholder = "Task title..."
+		b.TitleInput.Focus()
+		b.TitleInput.Width = 40
+
+		// TODO: add description field
+
+	case "e":
+		column := b.Project.Columns[b.CurrentColumnIndex]
+		task := column.Tasks[b.CurrentTaskIndex]
+
+		b.Mode = EditColumnMode
+		b.TitleInput = textinput.New()
+		b.TitleInput.SetValue(task.Title)
+		b.TitleInput.Focus()
+		b.TitleInput.Width = 40
+
+		// TODO: add description field
+
+	case "x":
+		column := &b.Project.Columns[b.CurrentColumnIndex]
+		column.Tasks = slices.Delete(column.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
+		if b.CurrentTaskIndex >= len(column.Tasks) && b.CurrentTaskIndex > 0 {
+			b.CurrentTaskIndex--
+		}
+
+	case "shift+l":
+		b.moveTaskToNextColumn()
+
+	case "shift+h":
+		b.moveTaskToPrevColumn()
+
+	case "+":
+		b.Mode = CreateColumnMode
+		b.ColumnNameInput = textinput.New()
+		b.ColumnNameInput.Placeholder = "Column name..."
+		b.ColumnNameInput.Focus()
+		b.ColumnNameInput.Width = 40
+	}
+
+	return b, nil
 }
 
 func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
