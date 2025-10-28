@@ -1,7 +1,9 @@
 package models
 
 import (
+	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -267,13 +269,102 @@ func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (b Board) renderBoard() string {
-	return ""
+	var s strings.Builder
+
+	s.WriteString(fmt.Sprintf("Projects: %s\n\n", b.Project.Name))
+	numColumns := len(b.Project.Columns)
+
+	if numColumns == 0 {
+		s.WriteString("No columns yet! Press '+' to add one.\n")
+		s.WriteString("\n(esc: back to projects)")
+		s.WriteString("\n(q: exit projector)")
+		return s.String()
+	}
+
+	columnWidth := (b.Width / numColumns)
+
+	for i, col := range b.Project.Columns {
+		colHeader := col.Name
+		if i == b.CurrentColumnIndex {
+			colHeader = "> " + colHeader + " <"
+		}
+		s.WriteString(fmt.Sprintf("%-*s", columnWidth, colHeader))
+	}
+	s.WriteString("\n")
+
+	for range numColumns {
+		s.WriteString(strings.Repeat("-", columnWidth))
+	}
+	s.WriteString("\n")
+
+	maxTasks := 0
+	for _, col := range b.Project.Columns {
+		if len(col.Tasks) > maxTasks {
+			maxTasks = len(col.Tasks)
+		}
+	}
+
+	for taskRow := range maxTasks {
+		for colIndex, col := range b.Project.Columns {
+			if taskRow < len(col.Tasks) {
+				task := col.Tasks[taskRow]
+				taskDisplay := task.Title
+
+				if colIndex == b.CurrentColumnIndex && taskRow == b.CurrentTaskIndex {
+					taskDisplay = "* " + taskDisplay + " *"
+				}
+
+				if len(taskDisplay) > columnWidth-2 {
+					taskDisplay = taskDisplay[:columnWidth-5] + "..."
+				}
+
+				s.WriteString(fmt.Sprintf("%-*s", columnWidth, taskDisplay))
+			} else {
+				s.WriteString(strings.Repeat(" ", columnWidth))
+			}
+		}
+		s.WriteString("\n")
+	}
+
+	s.WriteString("\n")
+	s.WriteString("h/l: change column | j/k: change task\n")
+	s.WriteString("n: new task | e: edit | x: delete | shift+l: move right | shift+h: move left | +: new column\n")
+	s.WriteString("esc: back to projects")
+	s.WriteString("q: quit")
+
+	return s.String()
 }
 
 func (b Board) renderTaskForm(t string) string {
-	return ""
+	var s strings.Builder
+
+	s.WriteString(t + "\n\n")
+
+	s.WriteString("Title:\n")
+	if b.FocusedInput == 0 {
+		s.WriteString(b.TitleInput.View() + " <- focused\n")
+	} else {
+		s.WriteString(b.TitleInput.View() + "\n")
+	}
+
+	s.WriteString("\n(enter: save | esc: cancel)")
+
+	return s.String()
 }
 
 func (b Board) renderColumnForm(t string) string {
-	return ""
+	var s strings.Builder
+
+	s.WriteString(t + "\n\n")
+
+	s.WriteString("Title:\n")
+	if b.FocusedInput == 0 {
+		s.WriteString(b.TitleInput.View() + " <- focused\n")
+	} else {
+		s.WriteString(b.TitleInput.View() + "\n")
+	}
+
+	s.WriteString("\n(enter: save | esc: cancel)")
+
+	return s.String()
 }
