@@ -67,13 +67,13 @@ func (b Board) View() string {
 	case ViewMode:
 		return b.renderBoard()
 	case CreateTaskMode:
-		return b.renderTaskForm("create")
+		return b.renderTaskForm("Create Task")
 	case EditTaskMode:
-		return b.renderTaskForm("edit")
+		return b.renderTaskForm("Edit Task")
 	case CreateColumnMode:
-		return b.renderColumnForm("create")
+		return b.renderColumnForm("Create Column")
 	case EditColumnMode:
-		return b.renderColumnForm("edit")
+		return b.renderColumnForm("Rename Column")
 	}
 
 	return ""
@@ -81,7 +81,7 @@ func (b Board) View() string {
 
 func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
-	case "esc":
+	case "q":
 		return b, tea.Quit
 
 	case "h":
@@ -125,7 +125,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		column := b.Project.Columns[b.CurrentColumnIndex]
 		task := column.Tasks[b.CurrentTaskIndex]
 
-		b.Mode = EditColumnMode
+		b.Mode = EditTaskMode
 		b.TitleInput = textinput.New()
 		b.TitleInput.SetValue(task.Title)
 		b.TitleInput.Focus()
@@ -152,6 +152,22 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.ColumnNameInput.Placeholder = "Column name..."
 		b.ColumnNameInput.Focus()
 		b.ColumnNameInput.Width = 40
+
+	case "-":
+		b.Project.Columns = slices.Delete(b.Project.Columns, b.CurrentColumnIndex, b.CurrentColumnIndex+1)
+		if b.CurrentColumnIndex > 0 {
+			b.CurrentColumnIndex--
+		}
+
+	case "E":
+		column := b.Project.Columns[b.CurrentColumnIndex]
+
+		b.Mode = EditColumnMode
+		b.ColumnNameInput = textinput.New()
+		b.ColumnNameInput.SetValue(column.Name)
+		b.ColumnNameInput.Focus()
+		b.ColumnNameInput.Width = 40
+
 	}
 
 	return b, nil
@@ -223,10 +239,10 @@ func (b Board) handleCreateColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return b, nil
 
 	case "enter":
-		if b.TitleInput.Value() != "" {
+		if b.ColumnNameInput.Value() != "" {
 			newColumn := Column{
 				Id:    uuid.NewString(),
-				Name:  b.TitleInput.Value(),
+				Name:  b.ColumnNameInput.Value(),
 				Tasks: []Task{},
 			}
 			b.Project.Columns = append(
@@ -239,7 +255,7 @@ func (b Board) handleCreateColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	}
 
 	if b.FocusedInput == 0 {
-		b.TitleInput, cmd = b.TitleInput.Update(msg)
+		b.ColumnNameInput, cmd = b.ColumnNameInput.Update(msg)
 	}
 
 	return b, cmd
@@ -254,15 +270,15 @@ func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return b, nil
 
 	case "enter":
-		if b.TitleInput.Value() != "" {
-			b.Project.Columns[b.CurrentColumnIndex].Name = b.TitleInput.Value()
+		if b.ColumnNameInput.Value() != "" {
+			b.Project.Columns[b.CurrentColumnIndex].Name = b.ColumnNameInput.Value()
 		}
 		b.Mode = ViewMode
 		return b, nil
 	}
 
 	if b.FocusedInput == 0 {
-		b.TitleInput, cmd = b.TitleInput.Update(msg)
+		b.ColumnNameInput, cmd = b.ColumnNameInput.Update(msg)
 	}
 
 	return b, cmd
@@ -329,8 +345,8 @@ func (b Board) renderBoard() string {
 	s.WriteString("\n")
 	s.WriteString("h/l: change column | j/k: change task\n")
 	s.WriteString("n: new task | e: edit | x: delete | shift+l: move right | shift+h: move left | +: new column\n")
-	s.WriteString("esc: back to projects")
-	s.WriteString("q: quit")
+	s.WriteString("esc: back to projects\n")
+	s.WriteString("q: quit\n")
 
 	return s.String()
 }
@@ -340,7 +356,7 @@ func (b Board) renderTaskForm(t string) string {
 
 	s.WriteString(t + "\n\n")
 
-	s.WriteString("Title:\n")
+	s.WriteString("Task Title:\n")
 	if b.FocusedInput == 0 {
 		s.WriteString(b.TitleInput.View() + " <- focused\n")
 	} else {
@@ -357,11 +373,11 @@ func (b Board) renderColumnForm(t string) string {
 
 	s.WriteString(t + "\n\n")
 
-	s.WriteString("Title:\n")
+	s.WriteString("Column Title:\n")
 	if b.FocusedInput == 0 {
-		s.WriteString(b.TitleInput.View() + " <- focused\n")
+		s.WriteString(b.ColumnNameInput.View() + "\n")
 	} else {
-		s.WriteString(b.TitleInput.View() + "\n")
+		s.WriteString(b.ColumnNameInput.View() + "\n")
 	}
 
 	s.WriteString("\n(enter: save | esc: cancel)")

@@ -15,7 +15,7 @@ func (b *Board) moveTaskToNextColumn() {
 	task := currentColumn.Tasks[b.CurrentTaskIndex]
 	currentColumn.Tasks = slices.Delete(currentColumn.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
 
-	nextColumn := b.Project.Columns[b.CurrentColumnIndex+1]
+	nextColumn := &b.Project.Columns[b.CurrentColumnIndex+1]
 	nextColumn.Tasks = append(nextColumn.Tasks, task)
 
 	b.CurrentColumnIndex++
@@ -35,7 +35,7 @@ func (b *Board) moveTaskToPrevColumn() {
 	task := currentColumn.Tasks[b.CurrentTaskIndex]
 	currentColumn.Tasks = slices.Delete(currentColumn.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
 
-	prevColumn := b.Project.Columns[b.CurrentColumnIndex-1]
+	prevColumn := &b.Project.Columns[b.CurrentColumnIndex-1]
 	prevColumn.Tasks = append(prevColumn.Tasks, task)
 
 	b.CurrentColumnIndex--

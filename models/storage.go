@@ -34,7 +34,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		boardModel, cmd := m.CurrentBoard.Update(msg)
 		m.CurrentBoard = boardModel.(Board)
 
-		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "q" {
+		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" {
 			m.ShowingBoard = false
 			m.Projects[m.Cursor] = m.CurrentBoard.Project
 		}
