@@ -99,6 +99,9 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.CurrentTaskIndex = 0
 
 	case "k":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
 		b.CurrentTaskIndex--
 		tasksLength := len(b.Project.Columns[b.CurrentColumnIndex].Tasks)
 		if b.CurrentTaskIndex < 0 {
@@ -106,6 +109,9 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 
 	case "j":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
 		b.CurrentTaskIndex++
 		tasksLength := len(b.Project.Columns[b.CurrentColumnIndex].Tasks)
 		if b.CurrentTaskIndex >= tasksLength {
@@ -154,6 +160,9 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.ColumnNameInput.Width = 40
 
 	case "-":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
 		b.Project.Columns = slices.Delete(b.Project.Columns, b.CurrentColumnIndex, b.CurrentColumnIndex+1)
 		if b.CurrentColumnIndex > 0 {
 			b.CurrentColumnIndex--

@@ -30,6 +30,25 @@ func (m Storage) Init() tea.Cmd {
 func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
+	// TODO: make this work
+	// if m.SelectedProject != "" {
+	// 	m.ShowingBoard = true
+	//
+	// 	var idx int
+	// 	for i, p := range m.Projects {
+	// 		if p.Name == m.SelectedProject {
+	// 			idx = i
+	// 			break
+	// 		}
+	// 	}
+	//
+	// 	m.CurrentBoard = Board{
+	// 		Project: m.Projects[idx],
+	// 		Width:   80,
+	// 		Height:  24,
+	// 	}
+	// }
+
 	if m.ShowingBoard {
 		boardModel, cmd := m.CurrentBoard.Update(msg)
 		m.CurrentBoard = boardModel.(Board)
@@ -65,17 +84,12 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "x":
-			toDelete := m.Projects[m.Cursor]
-			m.Projects = slices.DeleteFunc(m.Projects, func(p Project) bool {
-				return p.Id == toDelete.Id
-			})
-			if m.SelectedProject == toDelete.Name {
-				m.SelectedProject = m.Projects[0].Name
+			if len(m.Projects) == 0 {
+				return m, nil
 			}
-			if m.Cursor >= 1 {
+			m.Projects = slices.Delete(m.Projects, m.Cursor, m.Cursor+1)
+			if m.Cursor > 0 {
 				m.Cursor--
-			} else {
-				m.Cursor = 0
 			}
 
 		case "n":
@@ -125,6 +139,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case " ":
 			m.ShowingBoard = true
+			m.SelectedProject = m.Projects[m.Cursor].Name
 			m.CurrentBoard = Board{
 				Project: m.Projects[m.Cursor],
 				Width:   80,

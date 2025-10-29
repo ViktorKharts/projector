@@ -28,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if m, ok := m.(models.Storage); ok && m.SelectedProject != "" {
+	if m, ok := m.(models.Storage); ok {
 		if err = storage.Write(m); err != nil {
 			fmt.Printf("Error: %v", err)
 			os.Exit(1)
