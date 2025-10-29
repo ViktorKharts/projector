@@ -7,10 +7,20 @@ import (
 	"github.com/viktorkharts/projector/models"
 )
 
+type storageData struct {
+	SelectedProject string
+	Projects        []models.Project
+}
+
 func Write(db models.Storage) error {
 	storage := os.Getenv("HOME") + "/projector-storage.json"
 
-	bd, err := json.Marshal(db)
+	data := storageData{
+		SelectedProject: db.SelectedProject,
+		Projects:        db.Projects,
+	}
+
+	bd, err := json.Marshal(data)
 	if err != nil {
 		return &storageError{"failed to Marshal Project data before save", err.Error()}
 	}

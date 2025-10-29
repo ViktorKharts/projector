@@ -93,7 +93,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "l":
 		b.CurrentColumnIndex++
-		if b.CurrentColumnIndex >= len(b.Project.Columns)-1 {
+		if b.CurrentColumnIndex >= len(b.Project.Columns) {
 			b.CurrentColumnIndex = 0
 		}
 		b.CurrentTaskIndex = 0
@@ -108,7 +108,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "j":
 		b.CurrentTaskIndex++
 		tasksLength := len(b.Project.Columns[b.CurrentColumnIndex].Tasks)
-		if b.CurrentTaskIndex >= tasksLength-1 {
+		if b.CurrentTaskIndex >= tasksLength {
 			b.CurrentTaskIndex = 0
 		}
 
@@ -140,10 +140,10 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			b.CurrentTaskIndex--
 		}
 
-	case "shift+l":
+	case "L":
 		b.moveTaskToNextColumn()
 
-	case "shift+h":
+	case "H":
 		b.moveTaskToPrevColumn()
 
 	case "+":

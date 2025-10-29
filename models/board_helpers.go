@@ -2,7 +2,7 @@ package models
 
 import "slices"
 
-func (b Board) moveTaskToNextColumn() {
+func (b *Board) moveTaskToNextColumn() {
 	if b.CurrentColumnIndex >= len(b.Project.Columns)-1 {
 		return
 	}
@@ -22,7 +22,7 @@ func (b Board) moveTaskToNextColumn() {
 	b.CurrentTaskIndex = len(nextColumn.Tasks) - 1
 }
 
-func (b Board) moveTaskToPrevColumn() {
+func (b *Board) moveTaskToPrevColumn() {
 	if b.CurrentColumnIndex <= 0 {
 		return
 	}

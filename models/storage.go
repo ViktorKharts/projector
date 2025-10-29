@@ -11,14 +11,16 @@ import (
 )
 
 type Storage struct {
-	Cursor           int
-	IsWithinSelected bool
-	IsNewProject     bool
-	IsProjectEdit    bool
-	SelectedProject  string
-	Projects         []Project
-	ListBubble       list.Model
-	TextBubble       textinput.Model
+	Cursor          int
+	IsNewProject    bool
+	IsProjectEdit   bool
+	SelectedProject string
+	Projects        []Project
+	ListBubble      list.Model
+	TextBubble      textinput.Model
+	CurrentBoard    Board
+	ShowingBoard    bool
+	ViewMode        BoardMode
 }
 
 func (m Storage) Init() tea.Cmd {
@@ -28,13 +30,25 @@ func (m Storage) Init() tea.Cmd {
 func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
+	if m.ShowingBoard {
+		boardModel, cmd := m.CurrentBoard.Update(msg)
+		m.CurrentBoard = boardModel.(Board)
+
+		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "q" {
+			m.ShowingBoard = false
+			m.Projects[m.Cursor] = m.CurrentBoard.Project
+		}
+
+		return m, cmd
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 
-		case "s", " ":
+		case "s":
 			m.SelectedProject = m.Projects[m.Cursor].Name
 			return m, nil
 
@@ -92,9 +106,13 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.IsNewProject {
 				m.IsNewProject = false
 				p := Project{
-					Id:      uuid.NewString(),
-					Name:    m.TextBubble.Value(),
-					Columns: []Column{},
+					Id:   uuid.NewString(),
+					Name: m.TextBubble.Value(),
+					Columns: []Column{
+						{Id: uuid.NewString(), Name: "To Do", Tasks: []Task{}},
+						{Id: uuid.NewString(), Name: "In Progress", Tasks: []Task{}},
+						{Id: uuid.NewString(), Name: "Done", Tasks: []Task{}},
+					},
 				}
 				m.Projects = append(m.Projects, p)
 				m.TextBubble = textinput.Model{}
@@ -104,6 +122,15 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Projects[m.Cursor].Name = m.TextBubble.Value()
 				m.TextBubble = textinput.Model{}
 			}
+
+		case " ":
+			m.ShowingBoard = true
+			m.CurrentBoard = Board{
+				Project: m.Projects[m.Cursor],
+				Width:   80,
+				Height:  24,
+			}
+			return m, nil
 		}
 	}
 
@@ -115,6 +142,10 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Storage) View() string {
+	if m.ShowingBoard {
+		return m.CurrentBoard.View()
+	}
+
 	s := strings.Builder{}
 
 	// Create a new Project
