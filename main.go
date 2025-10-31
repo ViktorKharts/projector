@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/viktorkharts/projector/models"
@@ -47,17 +46,17 @@ func initializeStorage() (models.Storage, error) {
 	ti.Focus()
 	ti.CharLimit = 140
 	ti.Width = 20
-	s.TextBubble = ti
+	// s.TextBubble = ti
 
-	items := make([]list.Item, len(s.Projects))
-	for i, p := range s.Projects {
-		items[i] = p
-	}
+	// items := make([]list.Item, len(s.Projects))
+	// for i, p := range s.Projects {
+	// 	items[i] = p
+	// }
 
-	delegate := list.NewDefaultDelegate()
+	// delegate := list.NewDefaultDelegate()
 
-	li := list.New(items, delegate, 0, 0)
-	li.Title = "Projector"
+	// li := list.New(items, delegate, 0, 0)
+	// li.Title = "Projector"
 	// li.AdditionalFullHelpKeys = func() []key.Binding {
 	// 	return []key.Binding{
 	// 		listKeys.toggleSpinner,
@@ -68,7 +67,7 @@ func initializeStorage() (models.Storage, error) {
 	// 		listKeys.toggleHelpMenu,
 	// 	}
 	// }
-	s.ListBubble = li
+	// s.ListBubble = li
 
 	return s, nil
 }
