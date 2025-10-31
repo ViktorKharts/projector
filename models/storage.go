@@ -11,7 +11,7 @@ import (
 
 type Storage struct {
 	Cursor          int
-	Widht           int
+	Width           int
 	Height          int
 	SelectedProject string
 	Projects        []Project
@@ -51,7 +51,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.Widht = msg.Width
+		m.Width = msg.Width
 		m.Height = msg.Height
 
 	case tea.KeyMsg:
@@ -123,7 +123,10 @@ func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.ProjectInput.Width = 40
 		m.ProjectInput.CharLimit = 140
 
-	case "r":
+	case "r", "e":
+		if len(m.Projects) == 0 {
+			return m, nil
+		}
 		m.Mode = EditProjectMode
 		m.ProjectInput = textinput.New()
 		m.ProjectInput.SetValue(m.Projects[m.Cursor].Name)
@@ -132,11 +135,14 @@ func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.ProjectInput.CharLimit = 140
 
 	case " ":
+		if len(m.Projects) == 0 {
+			return m, nil
+		}
 		m.ShowingBoard = true
 		m.SelectedProject = m.Projects[m.Cursor].Name
 		m.CurrentBoard = Board{
 			Project: m.Projects[m.Cursor],
-			Width:   m.Widht,
+			Width:   m.Width,
 			Height:  m.Height,
 		}
 	}
@@ -191,6 +197,7 @@ func (m Storage) handleEditProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			p.Name = m.ProjectInput.Value()
 		}
 		m.Mode = ProjectsViewMode
+		m.SelectedProject = m.ProjectInput.Value()
 		return m, nil
 	}
 
@@ -203,6 +210,12 @@ func (m Storage) handleEditProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (m Storage) renderProjectsView() string {
 	var s strings.Builder
+
+	if len(m.Projects) == 0 {
+		s.WriteString("No projects yet! Press 'n' to create your first project.\n\n")
+		s.WriteString("(n: new project | q: quit)\n")
+		return s.String()
+	}
 
 	s.WriteString("These are all the projects you have:\n\n")
 
@@ -232,11 +245,7 @@ func (m Storage) renderCreateNewProjectView() string {
 
 	s.WriteString("Provide a name for a new Project\n\n")
 
-	if m.FocusedInput == 0 {
-		s.WriteString(m.ProjectInput.View() + "\n")
-	} else {
-		s.WriteString(m.ProjectInput.View() + "\n")
-	}
+	s.WriteString(m.ProjectInput.View() + "\n")
 
 	s.WriteString("\n(enter to save)\n")
 	s.WriteString("(esc to return)\n")
@@ -251,11 +260,7 @@ func (m Storage) renderEditProjectView() string {
 
 	s.WriteString("Change the name for the project '" + project.Name + "'" + "\n\n")
 
-	if m.FocusedInput == 0 {
-		s.WriteString(m.ProjectInput.View() + "\n")
-	} else {
-		s.WriteString(m.ProjectInput.View() + "\n")
-	}
+	s.WriteString(m.ProjectInput.View() + "\n")
 
 	s.WriteString("\n(enter to save)\n")
 	s.WriteString("(esc to return)\n")

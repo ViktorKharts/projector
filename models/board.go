@@ -135,8 +135,15 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.DescriptionInput.Placeholder = "Just fix all bugs, not hard"
 		b.DescriptionInput.Width = 40
 
-	case "e":
-		column := b.Project.Columns[b.CurrentColumnIndex]
+	case "e", "r":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
+		column := &b.Project.Columns[b.CurrentColumnIndex]
+		if len(column.Tasks) == 0 {
+			return b, nil
+		}
+
 		task := column.Tasks[b.CurrentTaskIndex]
 
 		b.Mode = EditTaskMode
@@ -162,7 +169,14 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			b.CurrentTaskIndex--
 		}
 
-	case "v":
+	case "v", "enter":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
+		column := &b.Project.Columns[b.CurrentColumnIndex]
+		if len(column.Tasks) == 0 {
+			return b, nil
+		}
 		b.Mode = ViewTaskMode
 
 	case "L":
@@ -183,11 +197,16 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			return b, nil
 		}
 		b.Project.Columns = slices.Delete(b.Project.Columns, b.CurrentColumnIndex, b.CurrentColumnIndex+1)
-		if b.CurrentColumnIndex > 0 {
-			b.CurrentColumnIndex--
+		if b.CurrentColumnIndex >= len(b.Project.Columns) && len(b.Project.Columns) > 0 {
+			b.CurrentColumnIndex = len(b.Project.Columns) - 1
+		}
+		b.CurrentTaskIndex = 0
+
+	case "E", "R":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
 		}
 
-	case "E":
 		column := b.Project.Columns[b.CurrentColumnIndex]
 
 		b.Mode = EditColumnMode
@@ -282,7 +301,7 @@ func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		if b.TitleInput.Value() != "" {
 			task := &b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex]
 			task.Title = b.TitleInput.Value()
-			task.Description = b.TitleInput.Value()
+			task.Description = b.DescriptionInput.Value()
 		}
 		b.Mode = ViewMode
 		return b, nil
@@ -412,10 +431,9 @@ func (b Board) renderBoard() string {
 	}
 
 	s.WriteString("\n")
-	s.WriteString("h/l: change column | j/k: change task\n")
-	s.WriteString("n: new task | e: edit | x: delete | shift+l: move right | shift+h: move left | +: new column\n")
-	s.WriteString("esc: back to projects\n")
-	s.WriteString("q: quit\n")
+	s.WriteString("h/l: column | j/k: task | H/L: move task | v: view details\n")
+	s.WriteString("n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n")
+	s.WriteString("esc: back | q: quit\n")
 
 	return s.String()
 }
