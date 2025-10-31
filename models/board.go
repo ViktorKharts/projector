@@ -215,6 +215,24 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.ColumnNameInput.Focus()
 		b.ColumnNameInput.Width = 40
 
+	case "(":
+		if b.CurrentColumnIndex-1 < 0 {
+			return b, nil
+		}
+
+		b.Project.Columns[b.CurrentColumnIndex-1], b.Project.Columns[b.CurrentColumnIndex] =
+			b.Project.Columns[b.CurrentColumnIndex], b.Project.Columns[b.CurrentColumnIndex-1]
+		b.CurrentColumnIndex--
+
+	case ")":
+		if b.CurrentColumnIndex+1 >= len(b.Project.Columns) {
+			return b, nil
+		}
+
+		b.Project.Columns[b.CurrentColumnIndex], b.Project.Columns[b.CurrentColumnIndex+1] =
+			b.Project.Columns[b.CurrentColumnIndex+1], b.Project.Columns[b.CurrentColumnIndex]
+		b.CurrentColumnIndex++
+
 	}
 
 	return b, nil
