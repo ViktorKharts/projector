@@ -26,6 +26,7 @@ type BoardMode int
 
 const (
 	ViewMode BoardMode = iota
+	ViewTaskMode
 	CreateTaskMode
 	EditTaskMode
 	CreateColumnMode
@@ -48,6 +49,8 @@ func (b Board) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch b.Mode {
 		case ViewMode:
 			return b.handleViewMode(msg)
+		case ViewTaskMode:
+			return b.handleViewTaskMode(msg)
 		case CreateTaskMode:
 			return b.handleCreateTaskMode(msg)
 		case EditTaskMode:
@@ -66,6 +69,8 @@ func (b Board) View() string {
 	switch b.Mode {
 	case ViewMode:
 		return b.renderBoard()
+	case ViewTaskMode:
+		return b.renderTaskView()
 	case CreateTaskMode:
 		return b.renderTaskForm("Create New Task")
 	case EditTaskMode:
@@ -152,6 +157,9 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			b.CurrentTaskIndex--
 		}
 
+	case "v":
+		b.Mode = ViewTaskMode
+
 	case "L":
 		b.moveTaskToNextColumn()
 
@@ -186,6 +194,18 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	}
 
 	return b, nil
+}
+
+func (b Board) handleViewTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
+	switch msg.String() {
+	case "esc":
+		b.Mode = ViewMode
+		return b, nil
+	}
+
+	return b, cmd
 }
 
 func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
@@ -362,6 +382,19 @@ func (b Board) renderBoard() string {
 	s.WriteString("n: new task | e: edit | x: delete | shift+l: move right | shift+h: move left | +: new column\n")
 	s.WriteString("esc: back to projects\n")
 	s.WriteString("q: quit\n")
+
+	return s.String()
+}
+
+func (b Board) renderTaskView() string {
+	var s strings.Builder
+
+	task := b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex]
+
+	s.WriteString("\nTitle: " + task.Title + "\n")
+	s.WriteString("\nDescription: " + task.Description + "\n")
+
+	s.WriteString("\n(esc: back | q: quit)")
 
 	return s.String()
 }
