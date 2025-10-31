@@ -37,25 +37,6 @@ func (m Storage) Init() tea.Cmd {
 func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	// TODO: make this work
-	// if m.SelectedProject != "" {
-	// 	m.ShowingBoard = true
-	//
-	// 	var idx int
-	// 	for i, p := range m.Projects {
-	// 		if p.Name == m.SelectedProject {
-	// 			idx = i
-	// 			break
-	// 		}
-	// 	}
-	//
-	// 	m.CurrentBoard = Board{
-	// 		Project: m.Projects[idx],
-	// 		Width:   80,
-	// 		Height:  24,
-	// 	}
-	// }
-
 	if m.ShowingBoard {
 		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" && m.CurrentBoard.Mode == ViewMode {
 			m.ShowingBoard = false
@@ -155,8 +136,8 @@ func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.SelectedProject = m.Projects[m.Cursor].Name
 		m.CurrentBoard = Board{
 			Project: m.Projects[m.Cursor],
-			Width:   80,
-			Height:  24,
+			Width:   m.Widht,
+			Height:  m.Height,
 		}
 	}
 
@@ -183,6 +164,7 @@ func (m Storage) handleCreateProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				},
 			}
 			m.Projects = append(m.Projects, p)
+			m.SelectedProject = m.ProjectInput.Value()
 		}
 		m.Mode = ProjectsViewMode
 		return m, nil
