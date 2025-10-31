@@ -18,6 +18,7 @@ type Board struct {
 	Height             int
 	Mode               BoardMode
 	TitleInput         textinput.Model
+	DescriptionInput   textinput.Model
 	ColumnNameInput    textinput.Model
 	FocusedInput       int
 }
@@ -126,11 +127,13 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "n":
 		b.Mode = CreateTaskMode
 		b.TitleInput = textinput.New()
-		b.TitleInput.Placeholder = "Task title..."
+		b.TitleInput.Placeholder = "Fix all bugs"
 		b.TitleInput.Focus()
 		b.TitleInput.Width = 40
 
-		// TODO: add description field
+		b.DescriptionInput = textinput.New()
+		b.DescriptionInput.Placeholder = "Just fix all bugs, not hard"
+		b.DescriptionInput.Width = 40
 
 	case "e":
 		column := b.Project.Columns[b.CurrentColumnIndex]
@@ -142,7 +145,9 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.TitleInput.Focus()
 		b.TitleInput.Width = 40
 
-		// TODO: add description field
+		b.DescriptionInput = textinput.New()
+		b.DescriptionInput.SetValue(task.Description)
+		b.DescriptionInput.Width = 40
 
 	case "x":
 		if len(b.Project.Columns) == 0 {
@@ -169,7 +174,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "+":
 		b.Mode = CreateColumnMode
 		b.ColumnNameInput = textinput.New()
-		b.ColumnNameInput.Placeholder = "Column name..."
+		b.ColumnNameInput.Placeholder = "Ready for Testing"
 		b.ColumnNameInput.Focus()
 		b.ColumnNameInput.Width = 40
 
@@ -216,11 +221,23 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.Mode = ViewMode
 		return b, nil
 
+	case "tab":
+		b.FocusedInput = (b.FocusedInput + 1) % 2
+		if b.FocusedInput == 0 {
+			b.TitleInput.Focus()
+			b.DescriptionInput.Blur()
+		} else {
+			b.TitleInput.Blur()
+			b.DescriptionInput.Focus()
+		}
+		return b, nil
+
 	case "enter":
 		if b.TitleInput.Value() != "" {
 			newTask := Task{
-				Id:    uuid.NewString(),
-				Title: b.TitleInput.Value(),
+				Id:          uuid.NewString(),
+				Title:       b.TitleInput.Value(),
+				Description: b.DescriptionInput.Value(),
 			}
 			b.Project.Columns[b.CurrentColumnIndex].Tasks = append(
 				b.Project.Columns[b.CurrentColumnIndex].Tasks,
@@ -229,12 +246,14 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		b.Mode = ViewMode
 		return b, nil
-
-		// TODO: add handle description
 	}
 
 	if b.FocusedInput == 0 {
 		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	if b.FocusedInput == 1 {
+		b.DescriptionInput, cmd = b.DescriptionInput.Update(msg)
 	}
 
 	return b, cmd
@@ -248,18 +267,33 @@ func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.Mode = ViewMode
 		return b, nil
 
+	case "tab":
+		b.FocusedInput = (b.FocusedInput + 1) % 2
+		if b.FocusedInput == 0 {
+			b.TitleInput.Focus()
+			b.DescriptionInput.Blur()
+		} else {
+			b.TitleInput.Blur()
+			b.DescriptionInput.Focus()
+		}
+		return b, nil
+
 	case "enter":
 		if b.TitleInput.Value() != "" {
-			b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex].Title = b.TitleInput.Value()
+			task := &b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex]
+			task.Title = b.TitleInput.Value()
+			task.Description = b.TitleInput.Value()
 		}
 		b.Mode = ViewMode
 		return b, nil
-
-		// TODO: add handle description
 	}
 
 	if b.FocusedInput == 0 {
 		b.TitleInput, cmd = b.TitleInput.Update(msg)
+	}
+
+	if b.FocusedInput == 1 {
+		b.DescriptionInput, cmd = b.DescriptionInput.Update(msg)
 	}
 
 	return b, cmd
@@ -394,7 +428,7 @@ func (b Board) renderTaskView() string {
 	s.WriteString("\nTitle: " + task.Title + "\n")
 	s.WriteString("\nDescription: " + task.Description + "\n")
 
-	s.WriteString("\n(esc: back | q: quit)")
+	s.WriteString("\n(esc to return)")
 
 	return s.String()
 }
@@ -411,6 +445,13 @@ func (b Board) renderTaskForm(t string) string {
 		s.WriteString(b.TitleInput.View() + "\n")
 	}
 
+	s.WriteString("Task Description:\n")
+	if b.FocusedInput == 1 {
+		s.WriteString(b.DescriptionInput.View() + " <- focused\n")
+	} else {
+		s.WriteString(b.DescriptionInput.View() + "\n")
+	}
+
 	s.WriteString("\n(enter: save | esc: cancel)")
 
 	return s.String()
@@ -422,11 +463,8 @@ func (b Board) renderColumnForm(t string) string {
 	s.WriteString(t + "\n\n")
 
 	s.WriteString("Column Title:\n")
-	if b.FocusedInput == 0 {
-		s.WriteString(b.ColumnNameInput.View() + "\n")
-	} else {
-		s.WriteString(b.ColumnNameInput.View() + "\n")
-	}
+
+	s.WriteString(b.ColumnNameInput.View() + "\n")
 
 	s.WriteString("\n(enter: save | esc: cancel)")
 
