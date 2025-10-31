@@ -67,13 +67,13 @@ func (b Board) View() string {
 	case ViewMode:
 		return b.renderBoard()
 	case CreateTaskMode:
-		return b.renderTaskForm("Create Task")
+		return b.renderTaskForm("Create New Task")
 	case EditTaskMode:
 		return b.renderTaskForm("Edit Task")
 	case CreateColumnMode:
-		return b.renderColumnForm("Create Column")
+		return b.renderColumnForm("Create New Column")
 	case EditColumnMode:
-		return b.renderColumnForm("Rename Column")
+		return b.renderColumnForm("Rename Column Name")
 	}
 
 	return ""
@@ -140,7 +140,13 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		// TODO: add description field
 
 	case "x":
+		if len(b.Project.Columns) == 0 {
+			return b, nil
+		}
 		column := &b.Project.Columns[b.CurrentColumnIndex]
+		if len(column.Tasks) == 0 {
+			return b, nil
+		}
 		column.Tasks = slices.Delete(column.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
 		if b.CurrentTaskIndex >= len(column.Tasks) && b.CurrentTaskIndex > 0 {
 			b.CurrentTaskIndex--
@@ -296,7 +302,7 @@ func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (b Board) renderBoard() string {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("Projects: %s\n\n", b.Project.Name))
+	s.WriteString(fmt.Sprintf("Project: %s\n\n", b.Project.Name))
 	numColumns := len(b.Project.Columns)
 
 	if numColumns == 0 {

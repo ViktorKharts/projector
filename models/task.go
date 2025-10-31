@@ -16,5 +16,5 @@ func (t *Task) EditTaskValue(nt string) {
 }
 
 func (t *Task) EditTaskDescription(nd string) {
-	t.Title = nd
+	t.Description = nd
 }
