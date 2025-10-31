@@ -50,14 +50,14 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// }
 
 	if m.ShowingBoard {
-		boardModel, cmd := m.CurrentBoard.Update(msg)
-		m.CurrentBoard = boardModel.(Board)
-
-		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" {
+		if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" && m.CurrentBoard.Mode == ViewMode {
 			m.ShowingBoard = false
 			m.Projects[m.Cursor] = m.CurrentBoard.Project
+			return m, nil
 		}
 
+		boardModel, cmd := m.CurrentBoard.Update(msg)
+		m.CurrentBoard = boardModel.(Board)
 		return m, cmd
 	}
 

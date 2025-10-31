@@ -33,8 +33,6 @@ func main() {
 			fmt.Printf("Error: %v", err)
 			os.Exit(1)
 		}
-
-		fmt.Printf("\n---\nYou chose %s!\n", m.SelectedProject)
 	}
 }
 
