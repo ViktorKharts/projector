@@ -1,24 +1,24 @@
-package styles
+package ui
 
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	inputStyle = lipgloss.NewStyle().
+	InputStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(colorHeader).
 			Padding(0, 1).
 			Width(50)
 
-	focusedInputStyle = lipgloss.NewStyle().
+	FocusedInputStyle = lipgloss.NewStyle().
 				BorderForeground(colorSelected).
 				BorderStyle(lipgloss.ThickBorder())
 
-	formTitleStyle = lipgloss.NewStyle().
+	FormTitleStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(colorHeader).
 			MarginBottom(1)
 
-	formLabelStyle = lipgloss.NewStyle().
+	FormLabelStyle = lipgloss.NewStyle().
 			Foreground(colorText).
 			MarginTop(1)
 )

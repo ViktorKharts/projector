@@ -1,4 +1,4 @@
-package styles
+package ui
 
 import "github.com/charmbracelet/lipgloss"
 
@@ -13,15 +13,15 @@ var (
 	colorBlack      = lipgloss.Color("#000000") // Black
 	colorDefault    = lipgloss.Color("#5F87FF") // Blue
 
-	baseStyle = lipgloss.NewStyle().Foreground(colorText)
+	BaseStyle = lipgloss.NewStyle().Foreground(colorText)
 
-	projectHeaderStyle = lipgloss.NewStyle().
+	ProjectHeaderStyle = lipgloss.NewStyle().
 				Bold(true).
 				Foreground(colorHeader).
 				Padding(0, 1).
 				MarginBottom(1)
 
-	helpStyle = lipgloss.NewStyle().
+	HelpStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(colorHeader).
 			Padding(0, 1).

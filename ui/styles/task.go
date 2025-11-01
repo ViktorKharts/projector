@@ -1,13 +1,13 @@
-package styles
+package ui
 
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	taskStyle = lipgloss.NewStyle().
+	TaskStyle = lipgloss.NewStyle().
 			Padding(0, 1).
 			MarginBottom(0)
 
-	selectedTaskStyle = lipgloss.NewStyle().
+	SelectedTaskStyle = lipgloss.NewStyle().
 				Background(colorSelected).
 				Foreground(colorBlack).
 				Padding(0, 1)
