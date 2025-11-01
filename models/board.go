@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
+	ui "github.com/viktorkharts/projector/ui/styles"
 )
 
 type Board struct {
@@ -393,7 +394,8 @@ func (b Board) handleEditColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (b Board) renderBoard() string {
 	var s strings.Builder
 
-	s.WriteString(fmt.Sprintf("Project: %s\n\n", b.Project.Name))
+	header := ui.ProjectHeaderStyle.Render(b.Project.Name)
+	s.WriteString("Project: " + header + "\n\n")
 	numColumns := len(b.Project.Columns)
 
 	if numColumns == 0 {
@@ -406,11 +408,12 @@ func (b Board) renderBoard() string {
 	columnWidth := (b.Width / numColumns)
 
 	for i, col := range b.Project.Columns {
-		colHeader := col.Name
+		colHeader := ui.ColumnHeaderStyle.Width(columnWidth).Render(col.Name)
 		if i == b.CurrentColumnIndex {
-			colHeader = "> " + colHeader + " <"
+			colHeader = ui.SelectedColumnHeaderStyle.Width(columnWidth).Render(col.Name)
 		}
-		s.WriteString(fmt.Sprintf("%-*s", columnWidth, colHeader))
+
+		s.WriteString(colHeader)
 	}
 	s.WriteString("\n")
 
