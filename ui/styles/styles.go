@@ -10,8 +10,9 @@ var (
 	colorHeader     = lipgloss.Color("#00D7FF") // Cyan
 	colorText       = lipgloss.Color("#FFFFFF") // White
 	colorBorder     = lipgloss.Color("#444444") // Dark Grey
-	colorBlack      = lipgloss.Color("#000000") // Black
-	colorDefault    = lipgloss.Color("#5F87FF") // Blue
+	colorBlack      = lipgloss.Color("#000000")
+	colorBlue       = lipgloss.Color("#5F87FF")
+	colorOrange     = lipgloss.Color("#FE7743")
 
 	BaseStyle = lipgloss.NewStyle().Foreground(colorText)
 

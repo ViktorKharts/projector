@@ -5,11 +5,11 @@ import "github.com/charmbracelet/lipgloss"
 var (
 	ColumnHeaderStyle = lipgloss.NewStyle().
 				Bold(true).
-				Foreground(colorDefault)
+				Foreground(colorBlue)
 
 	SelectedColumnHeaderStyle = lipgloss.NewStyle().
 					Bold(true).
-					Foreground(colorInProgress)
+					Foreground(colorOrange)
 
 	ColumnStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
@@ -18,20 +18,14 @@ var (
 			Width(30)
 
 	SelectedColumnStyle = lipgloss.NewStyle().
-				BorderForeground(colorSelected).
+				BorderForeground(colorOrange).
 				BorderStyle(lipgloss.ThickBorder())
 )
 
-func GetColumnColor(colName string) lipgloss.Color {
-	return colorDefault
-}
-
 func GetColumnStyle(colName string, isSelected bool) lipgloss.Style {
-	color := GetColumnColor(colName)
-
 	if isSelected {
-		return SelectedColumnStyle.BorderForeground(color)
+		return SelectedColumnStyle.BorderForeground(colorOrange)
 	}
 
-	return ColumnStyle.BorderForeground(color)
+	return ColumnStyle.BorderForeground(colorBlue)
 }

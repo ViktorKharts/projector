@@ -7,6 +7,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
 	ui "github.com/viktorkharts/projector/ui/styles"
 )
@@ -408,9 +409,9 @@ func (b Board) renderBoard() string {
 	columnWidth := (b.Width / numColumns)
 
 	for i, col := range b.Project.Columns {
-		colHeader := ui.ColumnHeaderStyle.Width(columnWidth).Render(col.Name)
+		colHeader := ui.ColumnHeaderStyle.Width(columnWidth).Align(lipgloss.Center).Render(col.Name)
 		if i == b.CurrentColumnIndex {
-			colHeader = ui.SelectedColumnHeaderStyle.Width(columnWidth).Render(col.Name)
+			colHeader = ui.SelectedColumnHeaderStyle.Width(columnWidth).Align(lipgloss.Center).Render(col.Name)
 		}
 
 		s.WriteString(colHeader)
@@ -433,14 +434,14 @@ func (b Board) renderBoard() string {
 		for colIndex, col := range b.Project.Columns {
 			if taskRow < len(col.Tasks) {
 				task := col.Tasks[taskRow]
-				taskDisplay := task.Title
 
-				if colIndex == b.CurrentColumnIndex && taskRow == b.CurrentTaskIndex {
-					taskDisplay = "* " + taskDisplay + " *"
+				if len(task.Title) > 15 {
+					task.Title = task.Title[:10] + "..."
 				}
 
-				if len(taskDisplay) > columnWidth-2 {
-					taskDisplay = taskDisplay[:columnWidth-5] + "..."
+				taskDisplay := ui.TaskStyle.Width(columnWidth).Render("  " + task.Title)
+				if colIndex == b.CurrentColumnIndex && taskRow == b.CurrentTaskIndex {
+					taskDisplay = ui.SelectedTaskStyle.Width(columnWidth).Render("▶ " + task.Title)
 				}
 
 				s.WriteString(fmt.Sprintf("%-*s", columnWidth, taskDisplay))
