@@ -5,20 +5,26 @@ import "github.com/charmbracelet/lipgloss"
 var (
 	InputStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorHeader).
+			BorderForeground(colorBlue).
 			Padding(0, 1).
-			Width(50)
+			Width(100)
 
-	FocusedInputStyle = lipgloss.NewStyle().
-				BorderForeground(colorSelected).
-				BorderStyle(lipgloss.ThickBorder())
+	FocusedInputStyle = InputStyle.
+				UnsetForeground().
+				BorderForeground(colorOrange)
 
-	FormTitleStyle = lipgloss.NewStyle().
+	FormHeaderStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(colorHeader).
 			MarginBottom(1)
 
 	FormLabelStyle = lipgloss.NewStyle().
-			Foreground(colorText).
-			MarginTop(1)
+			Width(100).
+			Align(lipgloss.Left).
+			Bold(true).
+			Foreground(colorBlue)
+
+	ActiveFormLabelStyle = FormLabelStyle.
+				UnsetForeground().
+				Foreground(colorOrange)
 )

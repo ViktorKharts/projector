@@ -478,24 +478,26 @@ func (b Board) renderTaskView() string {
 func (b Board) renderTaskForm(t string) string {
 	var s strings.Builder
 
-	s.WriteString(t + "\n\n")
+	s.WriteString("\n" + ui.FormHeaderStyle.Render(t) + "\n")
 
-	s.WriteString("Task Title:\n")
 	if b.FocusedInput == 0 {
-		s.WriteString(b.TitleInput.View() + " <- focused\n")
+		s.WriteString(ui.ActiveFormLabelStyle.Render("Task Title:") + "\n")
+		s.WriteString(ui.FocusedInputStyle.Render(b.TitleInput.View()) + "\n")
 	} else {
-		s.WriteString(b.TitleInput.View() + "\n")
+		s.WriteString(ui.FormLabelStyle.Render("Task Title:") + "\n")
+		s.WriteString(ui.InputStyle.Render(b.TitleInput.View()) + "\n")
 	}
 
-	s.WriteString("Task Description:\n")
 	if b.FocusedInput == 1 {
-		s.WriteString(b.DescriptionInput.View() + " <- focused\n")
+		s.WriteString(ui.ActiveFormLabelStyle.Render("Task Description:") + "\n")
+		s.WriteString(ui.FocusedInputStyle.Render(b.DescriptionInput.View()) + "\n")
 	} else {
-		s.WriteString(b.DescriptionInput.View() + "\n")
+		s.WriteString(ui.FormLabelStyle.Render("Task Description:") + "\n")
+		s.WriteString(ui.InputStyle.Render(b.DescriptionInput.View()) + "\n")
 	}
 
-	s.WriteString("\n(enter: save | esc: cancel)")
-
+	help := ui.HelpStyle.Render("(enter: save | esc: cancel)")
+	s.WriteString("\n" + help)
 	return s.String()
 }
 
