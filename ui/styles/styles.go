@@ -9,7 +9,7 @@ var (
 	colorSelected   = lipgloss.Color("#FFFF00") // Bright Yellow
 	colorHeader     = lipgloss.Color("#00D7FF") // Cyan
 	colorText       = lipgloss.Color("#FFFFFF") // White
-	colorBorder     = lipgloss.Color("#444444") // Dark Grey
+	colorGrey       = lipgloss.Color("#D7D7D7") // Dark Grey
 	colorBlack      = lipgloss.Color("#000000")
 	colorBlue       = lipgloss.Color("#5F87FF")
 	colorOrange     = lipgloss.Color("#FE7743")
@@ -23,8 +23,10 @@ var (
 				MarginBottom(1)
 
 	HelpStyle = lipgloss.NewStyle().
+			Align(lipgloss.Center).
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorHeader).
+			BorderForeground(colorGrey).
+			Foreground(colorGrey).
 			Padding(0, 1).
-			Width(50)
+			Width(100)
 )

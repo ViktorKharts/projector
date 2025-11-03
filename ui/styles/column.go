@@ -13,7 +13,7 @@ var (
 
 	ColumnStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorBorder).
+			BorderForeground(colorGrey).
 			Padding(1).
 			Width(30)
 

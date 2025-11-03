@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 
@@ -444,7 +443,7 @@ func (b Board) renderBoard() string {
 					taskDisplay = ui.SelectedTaskStyle.Width(columnWidth).Render("▶ " + task.Title)
 				}
 
-				s.WriteString(fmt.Sprintf("%-*s", columnWidth, taskDisplay))
+				s.WriteString(taskDisplay)
 			} else {
 				s.WriteString(strings.Repeat(" ", columnWidth))
 			}
@@ -452,10 +451,13 @@ func (b Board) renderBoard() string {
 		s.WriteString("\n")
 	}
 
-	s.WriteString("\n")
-	s.WriteString("h/l: column | j/k: task | H/L: move task | v: view details\n")
-	s.WriteString("n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n")
-	s.WriteString("esc: back | q: quit\n")
+	help := ui.HelpStyle.Render(
+		"h/l: column | j/k: task | H/L: move task | v: view details\n" +
+			"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
+			"esc: back | q: quit",
+	)
+
+	s.WriteString("\n" + help)
 
 	return s.String()
 }
