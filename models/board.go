@@ -504,13 +504,11 @@ func (b Board) renderTaskForm(t string) string {
 func (b Board) renderColumnForm(t string) string {
 	var s strings.Builder
 
-	s.WriteString(t + "\n\n")
+	s.WriteString("\n" + ui.FormHeaderStyle.Render(t) + "\n")
+	s.WriteString(ui.ActiveFormLabelStyle.Render("Column Title:") + "\n")
+	s.WriteString(ui.FocusedInputStyle.Render(b.ColumnNameInput.View()) + "\n")
 
-	s.WriteString("Column Title:\n")
-
-	s.WriteString(b.ColumnNameInput.View() + "\n")
-
-	s.WriteString("\n(enter: save | esc: cancel)")
-
+	help := ui.HelpStyle.Render("(enter: save | esc: cancel)")
+	s.WriteString("\n" + help)
 	return s.String()
 }
