@@ -451,9 +451,11 @@ func (b Board) renderBoard() string {
 
 	s.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, columns...))
 
-	help := ui.HelpStyle.Render("h/l: column | j/k: task | H/L: move task | v: view details\n" +
-		"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
-		"esc: back | q: quit")
+	help := ui.HelpStyle.Width(columnWidth * numColumns).Render(
+		"h/l: column | j/k: task | H/L: move task | v: view details\n" +
+			"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
+			"esc: back | q: quit",
+	)
 
 	s.WriteString("\n" + help)
 

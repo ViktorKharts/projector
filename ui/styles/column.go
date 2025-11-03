@@ -12,6 +12,7 @@ var (
 					Foreground(colorOrange)
 
 	ColumnStyle = lipgloss.NewStyle().
+		//TODO: clean up comments
 		// Border(lipgloss.RoundedBorder(), false, true).
 		// BorderForeground(colorBlue).
 		Padding(1)
