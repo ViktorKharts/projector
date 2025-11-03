@@ -170,7 +170,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			b.CurrentTaskIndex--
 		}
 
-	case "v", "enter":
+	case "v", "enter", " ":
 		if len(b.Project.Columns) == 0 {
 			return b, nil
 		}
@@ -395,7 +395,7 @@ func (b Board) renderBoard() string {
 	var s strings.Builder
 
 	header := ui.ProjectHeaderStyle.Render(b.Project.Name)
-	s.WriteString("Project: " + header + "\n\n")
+	s.WriteString("\nProject: " + header + "\n")
 	numColumns := len(b.Project.Columns)
 
 	if numColumns == 0 {
@@ -406,56 +406,54 @@ func (b Board) renderBoard() string {
 	}
 
 	columnWidth := (b.Width / numColumns)
-
-	for i, col := range b.Project.Columns {
-		colHeader := ui.ColumnHeaderStyle.Width(columnWidth).Align(lipgloss.Center).Render(col.Name)
-		if i == b.CurrentColumnIndex {
-			colHeader = ui.SelectedColumnHeaderStyle.Width(columnWidth).Align(lipgloss.Center).Render(col.Name)
-		}
-
-		s.WriteString(colHeader)
-	}
-	s.WriteString("\n")
-
-	for range numColumns {
-		s.WriteString(strings.Repeat("-", columnWidth))
-	}
-	s.WriteString("\n")
+	columns := make([]string, numColumns)
 
 	maxTasks := 0
+	allTasks := 0
 	for _, col := range b.Project.Columns {
+		allTasks += len(col.Tasks)
 		if len(col.Tasks) > maxTasks {
 			maxTasks = len(col.Tasks)
 		}
 	}
 
-	for taskRow := range maxTasks {
-		for colIndex, col := range b.Project.Columns {
-			if taskRow < len(col.Tasks) {
-				task := col.Tasks[taskRow]
+	for colIdx, col := range b.Project.Columns {
+		var columnContent strings.Builder
 
+		columnContent.WriteString(ui.GetColumnHeaderStyle(columnWidth,
+			colIdx == b.CurrentColumnIndex).Render(col.Name) + "\n")
+		// TODO: add tasks counter
+		// columnContent.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("#5F87FF")).Width(columnWidth).Align(lipgloss.Center).Render(fmt.Sprintf("(%d/%d)\n", len(col.Tasks), allTasks)))
+		columnContent.WriteString(ui.SeparatorStyle.Width(columnWidth).Render(strings.Repeat("-", columnWidth/2)) + "\n")
+
+		for taskIdx := range maxTasks {
+			if taskIdx < len(col.Tasks) {
+				task := col.Tasks[taskIdx]
 				if len(task.Title) > 15 {
-					task.Title = task.Title[:10] + "..."
+					task.Title = task.Title[:11] + "..."
 				}
 
-				taskDisplay := ui.TaskStyle.Width(columnWidth).Render("  " + task.Title)
-				if colIndex == b.CurrentColumnIndex && taskRow == b.CurrentTaskIndex {
-					taskDisplay = ui.SelectedTaskStyle.Width(columnWidth).Render("▶ " + task.Title)
+				taskDisplay := ui.GetTaskStyle(columnWidth, false).Render("  " + task.Title)
+				if colIdx == b.CurrentColumnIndex && taskIdx == b.CurrentTaskIndex {
+					taskDisplay = ui.GetTaskStyle(columnWidth, true).Render("▶ " + task.Title)
 				}
 
-				s.WriteString(taskDisplay)
+				columnContent.WriteString(taskDisplay + "\n")
 			} else {
-				s.WriteString(strings.Repeat(" ", columnWidth))
+				columnContent.WriteString(strings.Repeat(" ", columnWidth) + "\n")
 			}
 		}
-		s.WriteString("\n")
+
+		isSelected := colIdx == b.CurrentColumnIndex
+		columnStyle := ui.GetColumnStyle(isSelected)
+		columns[colIdx] = columnStyle.Render(columnContent.String())
 	}
 
-	help := ui.HelpStyle.Render(
-		"h/l: column | j/k: task | H/L: move task | v: view details\n" +
-			"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
-			"esc: back | q: quit",
-	)
+	s.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, columns...))
+
+	help := ui.HelpStyle.Render("h/l: column | j/k: task | H/L: move task | v: view details\n" +
+		"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
+		"esc: back | q: quit")
 
 	s.WriteString("\n" + help)
 

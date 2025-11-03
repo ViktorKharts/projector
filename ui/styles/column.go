@@ -12,17 +12,25 @@ var (
 					Foreground(colorOrange)
 
 	ColumnStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorGrey).
-			Padding(1).
-			Width(30)
+		// Border(lipgloss.RoundedBorder(), false, true).
+		// BorderForeground(colorBlue).
+		Padding(1)
 
 	SelectedColumnStyle = lipgloss.NewStyle().
-				BorderForeground(colorOrange).
-				BorderStyle(lipgloss.ThickBorder())
+		// Border(lipgloss.RoundedBorder(), false, true).
+		// BorderForeground(colorOrange).
+		Padding(1)
 )
 
-func GetColumnStyle(colName string, isSelected bool) lipgloss.Style {
+func GetColumnHeaderStyle(width int, isSelected bool) lipgloss.Style {
+	if isSelected {
+		return SelectedColumnHeaderStyle.Width(width).Align(lipgloss.Center)
+	}
+
+	return ColumnHeaderStyle.Width(width).Align(lipgloss.Center)
+}
+
+func GetColumnStyle(isSelected bool) lipgloss.Style {
 	if isSelected {
 		return SelectedColumnStyle.BorderForeground(colorOrange)
 	}

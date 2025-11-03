@@ -15,3 +15,11 @@ var (
 				Padding(0, 1).
 				MarginBottom(0)
 )
+
+func GetTaskStyle(width int, isSelected bool) lipgloss.Style {
+	if isSelected {
+		return SelectedTaskStyle.Width(width)
+	}
+
+	return TaskStyle.Width(width)
+}

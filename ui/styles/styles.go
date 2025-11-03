@@ -24,9 +24,12 @@ var (
 
 	HelpStyle = lipgloss.NewStyle().
 			Align(lipgloss.Center).
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(colorGrey).
 			Foreground(colorGrey).
 			Padding(0, 1).
 			Width(100)
+
+	SeparatorStyle = lipgloss.NewStyle().
+			Align(lipgloss.Center).
+			Foreground(colorBlue).
+			Padding(0, 1)
 )
