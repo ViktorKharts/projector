@@ -17,6 +17,7 @@ func (b *Board) moveTaskToNextColumn() {
 
 	nextColumn := &b.Project.Columns[b.CurrentColumnIndex+1]
 	nextColumn.Tasks = append(nextColumn.Tasks, task)
+	task.Index = len(nextColumn.Tasks) - 1
 
 	b.CurrentColumnIndex++
 	b.CurrentTaskIndex = len(nextColumn.Tasks) - 1
@@ -37,6 +38,7 @@ func (b *Board) moveTaskToPrevColumn() {
 
 	prevColumn := &b.Project.Columns[b.CurrentColumnIndex-1]
 	prevColumn.Tasks = append(prevColumn.Tasks, task)
+	task.Index = len(prevColumn.Tasks) - 1
 
 	b.CurrentColumnIndex--
 	b.CurrentTaskIndex = len(prevColumn.Tasks) - 1
@@ -54,6 +56,8 @@ func (b *Board) moveTaskUp() {
 
 	tasks := currentColumn.Tasks
 	newIdx := b.CurrentTaskIndex - 1
+	tasks[b.CurrentTaskIndex].Index--
+	tasks[newIdx].Index++
 	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
 	b.CurrentTaskIndex = newIdx
 }
@@ -70,6 +74,8 @@ func (b *Board) moveTaskDown() {
 
 	tasks := currentColumn.Tasks
 	newIdx := b.CurrentTaskIndex + 1
+	tasks[b.CurrentTaskIndex].Index++
+	tasks[newIdx].Index--
 	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
 	b.CurrentTaskIndex = newIdx
 }

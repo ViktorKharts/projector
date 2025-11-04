@@ -281,19 +281,19 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "enter":
 		if b.TitleInput.Value() != "" {
+			tasks := b.Project.Columns[b.CurrentColumnIndex].Tasks
 			newTask := Task{
 				Id:          uuid.NewString(),
 				Title:       b.TitleInput.Value(),
 				Description: b.DescriptionInput.Value(),
+				Index:       len(tasks),
 			}
-			b.Project.Columns[b.CurrentColumnIndex].Tasks = append(
-				b.Project.Columns[b.CurrentColumnIndex].Tasks,
-				newTask,
-			)
+			b.Project.Columns[b.CurrentColumnIndex].Tasks = append(tasks, newTask)
 		}
 		b.FocusedInput = 0
 		b.TitleInput.Focus()
 		b.DescriptionInput.Blur()
+		b.CurrentTaskIndex = len(b.Project.Columns[b.CurrentColumnIndex].Tasks) - 1
 		b.Mode = ViewMode
 		return b, nil
 	}
