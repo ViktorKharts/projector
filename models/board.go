@@ -181,10 +181,10 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.Mode = ViewTaskMode
 
 	case "L":
-		b.moveTaskToNextColumn()
+		b.moveTaskRight()
 
 	case "H":
-		b.moveTaskToPrevColumn()
+		b.moveTaskLeft()
 
 	case "K":
 		b.moveTaskUp()
@@ -286,7 +286,7 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				Id:          uuid.NewString(),
 				Title:       b.TitleInput.Value(),
 				Description: b.DescriptionInput.Value(),
-				Index:       len(tasks),
+				Index:       greatestIndex(tasks),
 			}
 			b.Project.Columns[b.CurrentColumnIndex].Tasks = append(tasks, newTask)
 		}

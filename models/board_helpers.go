@@ -2,7 +2,7 @@ package models
 
 import "slices"
 
-func (b *Board) moveTaskToNextColumn() {
+func (b *Board) moveTaskRight() {
 	if b.CurrentColumnIndex >= len(b.Project.Columns)-1 {
 		return
 	}
@@ -15,15 +15,15 @@ func (b *Board) moveTaskToNextColumn() {
 	task := currentColumn.Tasks[b.CurrentTaskIndex]
 	currentColumn.Tasks = slices.Delete(currentColumn.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
 
-	nextColumn := &b.Project.Columns[b.CurrentColumnIndex+1]
-	nextColumn.Tasks = append(nextColumn.Tasks, task)
-	task.Index = len(nextColumn.Tasks) - 1
+	leftColumn := &b.Project.Columns[b.CurrentColumnIndex+1]
+	task.Index = greatestIndex(leftColumn.Tasks)
+	leftColumn.Tasks = append(leftColumn.Tasks, task)
 
 	b.CurrentColumnIndex++
-	b.CurrentTaskIndex = len(nextColumn.Tasks) - 1
+	b.CurrentTaskIndex = len(leftColumn.Tasks) - 1
 }
 
-func (b *Board) moveTaskToPrevColumn() {
+func (b *Board) moveTaskLeft() {
 	if b.CurrentColumnIndex <= 0 {
 		return
 	}
@@ -36,12 +36,12 @@ func (b *Board) moveTaskToPrevColumn() {
 	task := currentColumn.Tasks[b.CurrentTaskIndex]
 	currentColumn.Tasks = slices.Delete(currentColumn.Tasks, b.CurrentTaskIndex, b.CurrentTaskIndex+1)
 
-	prevColumn := &b.Project.Columns[b.CurrentColumnIndex-1]
-	prevColumn.Tasks = append(prevColumn.Tasks, task)
-	task.Index = len(prevColumn.Tasks) - 1
+	rightColumn := &b.Project.Columns[b.CurrentColumnIndex-1]
+	task.Index = greatestIndex(rightColumn.Tasks)
+	rightColumn.Tasks = append(rightColumn.Tasks, task)
 
 	b.CurrentColumnIndex--
-	b.CurrentTaskIndex = len(prevColumn.Tasks) - 1
+	b.CurrentTaskIndex = len(rightColumn.Tasks) - 1
 }
 
 func (b *Board) moveTaskUp() {
@@ -56,9 +56,13 @@ func (b *Board) moveTaskUp() {
 
 	tasks := currentColumn.Tasks
 	newIdx := b.CurrentTaskIndex - 1
-	tasks[b.CurrentTaskIndex].Index--
-	tasks[newIdx].Index++
+
 	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
+
+	tempIdx := tasks[newIdx].Index
+	tasks[newIdx].Index = tasks[b.CurrentTaskIndex].Index
+	tasks[b.CurrentTaskIndex].Index = tempIdx
+
 	b.CurrentTaskIndex = newIdx
 }
 
@@ -74,8 +78,27 @@ func (b *Board) moveTaskDown() {
 
 	tasks := currentColumn.Tasks
 	newIdx := b.CurrentTaskIndex + 1
-	tasks[b.CurrentTaskIndex].Index++
-	tasks[newIdx].Index--
+
 	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
+
+	tempIdx := tasks[newIdx].Index
+	tasks[newIdx].Index = tasks[b.CurrentTaskIndex].Index
+	tasks[b.CurrentTaskIndex].Index = tempIdx
+
 	b.CurrentTaskIndex = newIdx
+}
+
+func greatestIndex(tasks []Task) int {
+	if len(tasks) == 0 {
+		return 0
+	}
+
+	greatest := tasks[0].Index
+	for _, t := range tasks {
+		if t.Index > greatest {
+			greatest = t.Index
+		}
+	}
+
+	return greatest + 1
 }
