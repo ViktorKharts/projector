@@ -467,11 +467,17 @@ func (b Board) renderTaskView() string {
 
 	task := b.Project.Columns[b.CurrentColumnIndex].Tasks[b.CurrentTaskIndex]
 
-	s.WriteString("\nTitle: " + task.Title + "\n")
-	s.WriteString("\nDescription: " + task.Description + "\n")
+	s.WriteString("\n" + ui.FormLabelStyle.Render("Title:") + "\n")
+	s.WriteString(ui.BaseStyle.Render(task.Title) + "\n")
+	s.WriteString(ui.FormLabelStyle.Render("Task Description:") + "\n")
+	if task.Description != "" {
+		s.WriteString(ui.BaseStyle.Render(task.Description) + "\n")
+	} else {
+		s.WriteString(ui.BaseStyle.Render("(no description)") + "\n")
+	}
 
-	s.WriteString("\n(esc to return)")
-
+	help := ui.HelpStyle.Render("(esc to return)")
+	s.WriteString("\n\n" + help)
 	return s.String()
 }
 

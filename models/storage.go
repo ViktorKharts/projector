@@ -7,6 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
+	ui "github.com/viktorkharts/projector/ui/styles"
 )
 
 type Storage struct {
@@ -212,31 +213,34 @@ func (m Storage) renderProjectsView() string {
 	var s strings.Builder
 
 	if len(m.Projects) == 0 {
-		s.WriteString("No projects yet! Press 'n' to create your first project.\n\n")
-		s.WriteString("(n: new project | q: quit)\n")
+		help := ui.HelpStyle.Render("No projects yet! Press 'n' to create your first project.\n" +
+			"\n(n: new project | q: quit)")
+		s.WriteString("\n" + help)
 		return s.String()
 	}
 
-	s.WriteString("These are all the projects you have:\n\n")
+	s.WriteString(ui.ProjectHeaderStyle.Render("Projector Wecomes You. These are your projects:") + "\n")
 
 	for i, v := range m.Projects {
+		var line string
+
+		cursor := "   "
 		if m.Cursor == i {
-			s.WriteString(" > ")
-		} else if m.Cursor != i {
-			s.WriteString("   ")
+			cursor = " ▶ "
 		}
 
+		selection := "○ "
 		if m.SelectedProject == m.Projects[i].Name {
-			s.WriteString("(•) ")
-		} else {
-			s.WriteString("( ) ")
+			selection = "● "
 		}
 
-		s.WriteString(v.Name)
-		s.WriteString("\n")
+		line = cursor + selection + v.Name
+		s.WriteString(line + "\n")
 	}
-	s.WriteString("\n(press q to quit)\n")
+	s.WriteString("\n\n")
 
+	help := ui.HelpStyle.Render("(press q to quit)")
+	s.WriteString("\n" + help + "\n")
 	return s.String()
 }
 

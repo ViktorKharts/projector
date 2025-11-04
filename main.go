@@ -16,7 +16,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	p := tea.NewProgram(s)
+	p := tea.NewProgram(s, tea.WithAltScreen())
 
 	m, err := p.Run()
 	if err != nil {
