@@ -41,3 +41,35 @@ func (b *Board) moveTaskToPrevColumn() {
 	b.CurrentColumnIndex--
 	b.CurrentTaskIndex = len(prevColumn.Tasks) - 1
 }
+
+func (b *Board) moveTaskUp() {
+	currentColumn := &b.Project.Columns[b.CurrentColumnIndex]
+	if len(currentColumn.Tasks) == 0 {
+		return
+	}
+
+	if b.CurrentTaskIndex == 0 {
+		return
+	}
+
+	tasks := currentColumn.Tasks
+	newIdx := b.CurrentTaskIndex - 1
+	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
+	b.CurrentTaskIndex = newIdx
+}
+
+func (b *Board) moveTaskDown() {
+	currentColumn := &b.Project.Columns[b.CurrentColumnIndex]
+	if len(currentColumn.Tasks) == 0 {
+		return
+	}
+
+	if b.CurrentTaskIndex == len(currentColumn.Tasks)-1 {
+		return
+	}
+
+	tasks := currentColumn.Tasks
+	newIdx := b.CurrentTaskIndex + 1
+	tasks[b.CurrentTaskIndex], tasks[newIdx] = tasks[newIdx], tasks[b.CurrentTaskIndex]
+	b.CurrentTaskIndex = newIdx
+}

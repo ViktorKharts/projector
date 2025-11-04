@@ -5,6 +5,7 @@ type Task struct {
 	Title       string
 	Description string
 	IsComplete  bool
+	Index       int
 }
 
 func (t *Task) ToggleIsCompleteTask() {

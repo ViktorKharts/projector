@@ -186,6 +186,12 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "H":
 		b.moveTaskToPrevColumn()
 
+	case "K":
+		b.moveTaskUp()
+
+	case "J":
+		b.moveTaskDown()
+
 	case "+":
 		b.Mode = CreateColumnMode
 		b.ColumnNameInput = textinput.New()
@@ -437,6 +443,10 @@ func (b Board) renderBoard() string {
 		// TODO: add tasks counter
 		// columnContent.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("#5F87FF")).Width(columnWidth).Align(lipgloss.Center).Render(fmt.Sprintf("(%d/%d)\n", len(col.Tasks), allTasks)))
 		columnContent.WriteString(ui.SeparatorStyle.Width(columnWidth).Render(strings.Repeat("-", columnWidth/2)) + "\n")
+
+		slices.SortStableFunc(col.Tasks, func(a, b Task) int {
+			return a.Index - b.Index
+		})
 
 		for taskIdx := range maxTasks {
 			if taskIdx < len(col.Tasks) {
