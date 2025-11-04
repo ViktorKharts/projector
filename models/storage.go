@@ -135,7 +135,7 @@ func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.ProjectInput.Width = 40
 		m.ProjectInput.CharLimit = 140
 
-	case " ":
+	case " ", "enter":
 		if len(m.Projects) == 0 {
 			return m, nil
 		}

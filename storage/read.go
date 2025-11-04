@@ -32,7 +32,7 @@ func Read() (models.Storage, error) {
 	}
 
 	if len(f) == 0 {
-		return s, &storageError{"your storage is empty", "No system error."}
+		return s, nil
 	}
 
 	if err = json.Unmarshal(f, &s); err != nil {

@@ -256,6 +256,9 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case "esc":
+		b.FocusedInput = 0
+		b.TitleInput.Focus()
+		b.DescriptionInput.Blur()
 		b.Mode = ViewMode
 		return b, nil
 
@@ -282,6 +285,9 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 				newTask,
 			)
 		}
+		b.FocusedInput = 0
+		b.TitleInput.Focus()
+		b.DescriptionInput.Blur()
 		b.Mode = ViewMode
 		return b, nil
 	}
@@ -302,6 +308,9 @@ func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case "esc":
+		b.FocusedInput = 0
+		b.TitleInput.Focus()
+		b.DescriptionInput.Blur()
 		b.Mode = ViewMode
 		return b, nil
 
@@ -322,6 +331,9 @@ func (b Board) handleEditTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			task.Title = b.TitleInput.Value()
 			task.Description = b.DescriptionInput.Value()
 		}
+		b.FocusedInput = 0
+		b.TitleInput.Focus()
+		b.DescriptionInput.Blur()
 		b.Mode = ViewMode
 		return b, nil
 	}
@@ -395,7 +407,7 @@ func (b Board) renderBoard() string {
 	var s strings.Builder
 
 	header := ui.ProjectHeaderStyle.Render(b.Project.Name)
-	s.WriteString("\nProject: " + header + "\n")
+	s.WriteString("\n" + header + "\n")
 	numColumns := len(b.Project.Columns)
 
 	if numColumns == 0 {
@@ -429,8 +441,8 @@ func (b Board) renderBoard() string {
 		for taskIdx := range maxTasks {
 			if taskIdx < len(col.Tasks) {
 				task := col.Tasks[taskIdx]
-				if len(task.Title) > 15 {
-					task.Title = task.Title[:11] + "..."
+				if len(task.Title) >= columnWidth {
+					task.Title = task.Title[:columnWidth-3] + "..."
 				}
 
 				taskDisplay := ui.GetTaskStyle(columnWidth, false).Render("  " + task.Title)
