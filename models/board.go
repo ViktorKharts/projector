@@ -130,11 +130,11 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.TitleInput = textinput.New()
 		b.TitleInput.Placeholder = "Fix all bugs"
 		b.TitleInput.Focus()
-		b.TitleInput.Width = 40
+		b.TitleInput.Width = b.Width
 
 		b.DescriptionInput = textinput.New()
 		b.DescriptionInput.Placeholder = "Just fix all bugs, not hard"
-		b.DescriptionInput.Width = 40
+		b.DescriptionInput.Width = b.Width
 
 	case "e", "r":
 		if len(b.Project.Columns) == 0 {
@@ -151,11 +151,11 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.TitleInput = textinput.New()
 		b.TitleInput.SetValue(task.Title)
 		b.TitleInput.Focus()
-		b.TitleInput.Width = 40
+		b.TitleInput.Width = b.Width
 
 		b.DescriptionInput = textinput.New()
 		b.DescriptionInput.SetValue(task.Description)
-		b.DescriptionInput.Width = 40
+		b.DescriptionInput.Width = b.Width
 
 	case "x":
 		if len(b.Project.Columns) == 0 {
@@ -197,7 +197,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.ColumnNameInput = textinput.New()
 		b.ColumnNameInput.Placeholder = "Ready for Testing"
 		b.ColumnNameInput.Focus()
-		b.ColumnNameInput.Width = 40
+		b.ColumnNameInput.Width = b.Width
 
 	case "-":
 		if len(b.Project.Columns) == 0 {
@@ -220,7 +220,7 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.ColumnNameInput = textinput.New()
 		b.ColumnNameInput.SetValue(column.Name)
 		b.ColumnNameInput.Focus()
-		b.ColumnNameInput.Width = 40
+		b.ColumnNameInput.Width = b.Width
 
 	case "(":
 		if b.CurrentColumnIndex-1 < 0 {
@@ -498,9 +498,9 @@ func (b Board) renderTaskView() string {
 		s.WriteString(ui.BaseStyle.Render("(no description)") + "\n")
 	}
 
-	help := ui.HelpStyle.Render("(esc to return)")
-	s.WriteString("\n\n" + help)
-	return s.String()
+	help := ui.HelpStyle.Render("\n(esc to return)")
+	s.WriteString(help)
+	return lipgloss.Place(b.Width, b.Height, lipgloss.Center, lipgloss.Top, s.String())
 }
 
 func (b Board) renderTaskForm(t string) string {
@@ -525,8 +525,8 @@ func (b Board) renderTaskForm(t string) string {
 	}
 
 	help := ui.HelpStyle.Render("(enter: save | esc: cancel)")
-	s.WriteString("\n" + help)
-	return s.String()
+	s.WriteString(help)
+	return lipgloss.Place(b.Width, b.Height, lipgloss.Center, lipgloss.Top, s.String())
 }
 
 func (b Board) renderColumnForm(t string) string {
@@ -537,6 +537,6 @@ func (b Board) renderColumnForm(t string) string {
 	s.WriteString(ui.FocusedInputStyle.Render(b.ColumnNameInput.View()) + "\n")
 
 	help := ui.HelpStyle.Render("(enter: save | esc: cancel)")
-	s.WriteString("\n" + help)
-	return s.String()
+	s.WriteString(help)
+	return lipgloss.Place(b.Width, b.Height, lipgloss.Center, lipgloss.Top, s.String())
 }

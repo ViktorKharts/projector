@@ -20,7 +20,6 @@ var (
 
 	FormLabelStyle = lipgloss.NewStyle().
 			Width(100).
-			Align(lipgloss.Left).
 			Bold(true).
 			Foreground(colorBlue)
 
