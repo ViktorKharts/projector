@@ -222,27 +222,25 @@ func (m Storage) renderProjectsView() string {
 
 	s.WriteString(ui.ProjectHeaderStyle.Render("Projector Wecomes You. These are your projects:") + "\n")
 
+	var leftAlignedBlock strings.Builder
 	for i, v := range m.Projects {
 		var line string
 
-		cursor := "   "
+		cursor := "○ "
+		line = ui.ProjectDefault.Render(cursor + v.Name)
 		if m.Cursor == i {
-			cursor = " ▶ "
+			cursor = "● "
+			line = ui.ProjectSelected.Render(cursor + v.Name)
 		}
 
-		selection := "○ "
-		if m.SelectedProject == m.Projects[i].Name {
-			selection = "● "
-		}
-
-		line = cursor + selection + v.Name
-		s.WriteString(line + "\n")
+		leftAlignedBlock.WriteString(line + "\n")
 	}
-	s.WriteString("\n\n")
+	s.WriteString(ui.ProjectsContainer.Render(leftAlignedBlock.String()) + "\n\n")
 
 	help := ui.HelpStyle.Render("(press q to quit)")
 	s.WriteString("\n" + help + "\n")
-	return s.String()
+
+	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, s.String())
 }
 
 func (m Storage) renderCreateNewProjectView() string {
