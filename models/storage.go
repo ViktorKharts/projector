@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
 	ui "github.com/viktorkharts/projector/ui/styles"
 )
@@ -247,14 +248,14 @@ func (m Storage) renderProjectsView() string {
 func (m Storage) renderCreateNewProjectView() string {
 	var s strings.Builder
 
-	s.WriteString("Provide a name for a new Project\n\n")
+	s.WriteString(ui.FormHeaderStyle.Render("Provide a name for a new Project") + "\n")
 
-	s.WriteString(m.ProjectInput.View() + "\n")
+	s.WriteString(ui.ActiveFormLabelStyle.Render("Project Title:") + "\n")
+	s.WriteString(ui.FocusedInputStyle.Render(m.ProjectInput.View()) + "\n")
 
-	s.WriteString("\n(enter to save)\n")
-	s.WriteString("(esc to return)\n")
-
-	return s.String()
+	help := ui.HelpStyle.Render("(enter: save | esc: return)")
+	s.WriteString(help)
+	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Top, s.String())
 }
 
 func (m Storage) renderEditProjectView() string {
@@ -262,12 +263,11 @@ func (m Storage) renderEditProjectView() string {
 
 	project := m.Projects[m.Cursor]
 
-	s.WriteString("Change the name for the project '" + project.Name + "'" + "\n\n")
+	s.WriteString("Change name for " + ui.FormHeaderStyle.Render(project.Name) + "\n\n")
+	s.WriteString(ui.ActiveFormLabelStyle.Render("New Project Title:") + "\n")
+	s.WriteString(ui.FocusedInputStyle.Render(m.ProjectInput.View()) + "\n")
 
-	s.WriteString(m.ProjectInput.View() + "\n")
-
-	s.WriteString("\n(enter to save)\n")
-	s.WriteString("(esc to return)\n")
-
-	return s.String()
+	help := ui.HelpStyle.Render("(enter: save | esc: return)")
+	s.WriteString(help)
+	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Top, s.String())
 }
