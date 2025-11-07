@@ -439,8 +439,7 @@ func (b Board) renderBoard() string {
 	for colIdx, col := range b.Project.Columns {
 		var columnContent strings.Builder
 
-		columnContent.WriteString(ui.GetColumnHeaderStyle(columnWidth,
-			colIdx == b.CurrentColumnIndex).Render(col.Name) + "\n")
+		columnContent.WriteString(ui.GetColumnHeaderStyle(columnWidth, colIdx == b.CurrentColumnIndex).Render(col.Name) + "\n")
 		columnContent.WriteString(ui.TaskCounterStyle.Width(columnWidth).Render(fmt.Sprintf("(%d/%d)", len(col.Tasks), allTasks)) + "\n")
 		columnContent.WriteString(ui.SeparatorStyle.Width(columnWidth).Render(strings.Repeat("-", columnWidth/2)) + "\n")
 
@@ -474,8 +473,8 @@ func (b Board) renderBoard() string {
 	s.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, columns...))
 
 	help := ui.HelpStyle.Width(columnWidth * numColumns).Render(
-		"h/l: column | j/k: task | H/L: move task | v: view details\n" +
-			"n: new task | e: edit | x: delete | -: del column | +: new column | R: rename column\n" +
+		"h/l: column | j/k: task | H/L/J/K: move task | v/enter: view details\n" +
+			"n: new task | e/r: edit | x: delete | -: del column | +: new column | R: rename column\n" +
 			"esc: back | q: quit",
 	)
 
