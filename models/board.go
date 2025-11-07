@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
@@ -440,8 +441,7 @@ func (b Board) renderBoard() string {
 
 		columnContent.WriteString(ui.GetColumnHeaderStyle(columnWidth,
 			colIdx == b.CurrentColumnIndex).Render(col.Name) + "\n")
-		// TODO: add tasks counter
-		// columnContent.WriteString(lipgloss.NewStyle().Foreground(lipgloss.Color("#5F87FF")).Width(columnWidth).Align(lipgloss.Center).Render(fmt.Sprintf("(%d/%d)\n", len(col.Tasks), allTasks)))
+		columnContent.WriteString(ui.TaskCounterStyle.Width(columnWidth).Render(fmt.Sprintf("(%d/%d)", len(col.Tasks), allTasks)) + "\n")
 		columnContent.WriteString(ui.SeparatorStyle.Width(columnWidth).Render(strings.Repeat("-", columnWidth/2)) + "\n")
 
 		slices.SortStableFunc(col.Tasks, func(a, b Task) int {

@@ -12,15 +12,13 @@ var (
 					Foreground(colorOrange)
 
 	ColumnStyle = lipgloss.NewStyle().
-		//TODO: clean up comments
-		// Border(lipgloss.RoundedBorder(), false, true).
-		// BorderForeground(colorBlue).
-		Padding(1)
+			Padding(1)
 
-	SelectedColumnStyle = lipgloss.NewStyle().
-		// Border(lipgloss.RoundedBorder(), false, true).
-		// BorderForeground(colorOrange).
-		Padding(1)
+	SelectedColumnStyle = ColumnStyle
+
+	TaskCounterStyle = lipgloss.NewStyle().
+				Foreground(colorBlue).
+				Align(lipgloss.Center)
 )
 
 func GetColumnHeaderStyle(width int, isSelected bool) lipgloss.Style {
