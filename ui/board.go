@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/viktorkharts/projector/commands"
 	"github.com/viktorkharts/projector/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -20,11 +21,12 @@ type Board struct {
 	CurrentTaskIndex   int
 	Width              int
 	Height             int
+	FocusedInput       int
 	Mode               BoardMode
 	TitleInput         textinput.Model
 	DescriptionInput   textinput.Model
 	ColumnNameInput    textinput.Model
-	FocusedInput       int
+	History            commands.CommandBoardHistory
 }
 
 type BoardMode int
@@ -190,10 +192,32 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		b.moveTaskLeftRight(-1)
 
 	case "K": // up
-		b.moveTaskUpDown(-1)
+		// b.moveTaskUpDown(-1)
+		cmd := &commands.MoveTaskUpDownCommand{
+			ColumnIndex: b.CurrentColumnIndex,
+			TaskIndex:   b.CurrentTaskIndex,
+			Direction:   -1,
+		}
+		cmd.Execute(&b)
+		b.History.UndoStack.Push(cmd)
 
 	case "J": // down
-		b.moveTaskUpDown(1)
+		// b.moveTaskUpDown(1)
+		cmd := &commands.MoveTaskUpDownCommand{
+			ColumnIndex: b.CurrentColumnIndex,
+			TaskIndex:   b.CurrentTaskIndex,
+			Direction:   1,
+		}
+		cmd.Execute(&b)
+		b.History.UndoStack.Push(cmd)
+
+	case "u":
+		if b.History.UndoStack.Length() == 0 {
+			return b, nil
+		}
+		cmd := b.History.UndoStack.Pop()
+		cmd.Undo(&b)
+		b.History.RedoStack.Push(cmd)
 
 	case "+":
 		b.Mode = CreateColumnMode

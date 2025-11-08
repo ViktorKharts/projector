@@ -4,12 +4,14 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/viktorkharts/projector/commands"
+	"github.com/viktorkharts/projector/models"
+	ui "github.com/viktorkharts/projector/ui/styles"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
-	"github.com/viktorkharts/projector/models"
-	ui "github.com/viktorkharts/projector/ui/styles"
 )
 
 type Main struct {
@@ -147,6 +149,7 @@ func (m Main) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			Project: m.Projects[m.Cursor],
 			Width:   m.Width,
 			Height:  m.Height,
+			History: commands.NewCommandBoardHistory(),
 		}
 	}
 
