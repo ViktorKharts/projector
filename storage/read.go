@@ -7,10 +7,11 @@ import (
 	"os"
 
 	"github.com/viktorkharts/projector/models"
+	"github.com/viktorkharts/projector/ui"
 )
 
-func Read() (models.Storage, error) {
-	s := models.Storage{
+func Read() (ui.Main, error) {
+	s := ui.Main{
 		SelectedProject: "",
 		Projects:        []models.Project{},
 	}

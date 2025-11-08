@@ -1,9 +1,11 @@
-package models
+package ui
 
 import (
 	"fmt"
 	"slices"
 	"strings"
+
+	"github.com/viktorkharts/projector/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,7 +15,7 @@ import (
 )
 
 type Board struct {
-	Project            Project
+	Project            models.Project
 	CurrentColumnIndex int
 	CurrentTaskIndex   int
 	Width              int
@@ -181,17 +183,17 @@ func (b Board) handleViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 		b.Mode = ViewTaskMode
 
-	case "L":
-		b.moveTaskRight()
+	case "L": // right
+		b.moveTaskLeftRight(1)
 
-	case "H":
-		b.moveTaskLeft()
+	case "H": // left
+		b.moveTaskLeftRight(-1)
 
-	case "K":
-		b.moveTaskUp()
+	case "K": // up
+		b.moveTaskUpDown(-1)
 
-	case "J":
-		b.moveTaskDown()
+	case "J": // down
+		b.moveTaskUpDown(1)
 
 	case "+":
 		b.Mode = CreateColumnMode
@@ -283,7 +285,7 @@ func (b Board) handleCreateTaskMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		if b.TitleInput.Value() != "" {
 			tasks := b.Project.Columns[b.CurrentColumnIndex].Tasks
-			newTask := Task{
+			newTask := models.Task{
 				Id:          uuid.NewString(),
 				Title:       b.TitleInput.Value(),
 				Description: b.DescriptionInput.Value(),
@@ -366,10 +368,10 @@ func (b Board) handleCreateColumnMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "enter":
 		if b.ColumnNameInput.Value() != "" {
-			newColumn := Column{
+			newColumn := models.Column{
 				Id:    uuid.NewString(),
 				Name:  b.ColumnNameInput.Value(),
-				Tasks: []Task{},
+				Tasks: []models.Task{},
 			}
 			b.Project.Columns = append(
 				b.Project.Columns,
@@ -443,7 +445,7 @@ func (b Board) renderBoard() string {
 		columnContent.WriteString(ui.TaskCounterStyle.Width(columnWidth).Render(fmt.Sprintf("(%d/%d)", len(col.Tasks), allTasks)) + "\n")
 		columnContent.WriteString(ui.SeparatorStyle.Width(columnWidth).Render(strings.Repeat("-", columnWidth/2)) + "\n")
 
-		slices.SortStableFunc(col.Tasks, func(a, b Task) int {
+		slices.SortStableFunc(col.Tasks, func(a, b models.Task) int {
 			return a.Index - b.Index
 		})
 

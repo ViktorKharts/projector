@@ -1,4 +1,4 @@
-package models
+package ui
 
 import (
 	"slices"
@@ -8,15 +8,16 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/google/uuid"
+	"github.com/viktorkharts/projector/models"
 	ui "github.com/viktorkharts/projector/ui/styles"
 )
 
-type Storage struct {
+type Main struct {
 	Cursor          int
 	Width           int
 	Height          int
 	SelectedProject string
-	Projects        []Project
+	Projects        []models.Project
 	ProjectInput    textinput.Model
 	CurrentBoard    Board
 	ShowingBoard    bool
@@ -32,11 +33,11 @@ const (
 	EditProjectMode
 )
 
-func (m Storage) Init() tea.Cmd {
+func (m Main) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Main) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	if m.ShowingBoard {
@@ -70,7 +71,7 @@ func (m Storage) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Storage) View() string {
+func (m Main) View() string {
 	if m.ShowingBoard {
 		return m.CurrentBoard.View()
 	}
@@ -87,7 +88,7 @@ func (m Storage) View() string {
 	return ""
 }
 
-func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Main) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "ctrl+c", "q":
 		return m, tea.Quit
@@ -152,7 +153,7 @@ func (m Storage) handleProjectsViewMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m Storage) handleCreateProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Main) handleCreateProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg.String() {
@@ -162,13 +163,13 @@ func (m Storage) handleCreateProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "enter":
 		if m.ProjectInput.Value() != "" {
-			p := Project{
+			p := models.Project{
 				Id:   uuid.NewString(),
 				Name: m.ProjectInput.Value(),
-				Columns: []Column{
-					{Id: uuid.NewString(), Name: "To Do", Tasks: []Task{}},
-					{Id: uuid.NewString(), Name: "In Progress", Tasks: []Task{}},
-					{Id: uuid.NewString(), Name: "Done", Tasks: []Task{}},
+				Columns: []models.Column{
+					{Id: uuid.NewString(), Name: "To Do", Tasks: []models.Task{}},
+					{Id: uuid.NewString(), Name: "In Progress", Tasks: []models.Task{}},
+					{Id: uuid.NewString(), Name: "Done", Tasks: []models.Task{}},
 				},
 			}
 			m.Projects = append(m.Projects, p)
@@ -185,7 +186,7 @@ func (m Storage) handleCreateProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Storage) handleEditProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Main) handleEditProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg.String() {
@@ -210,7 +211,7 @@ func (m Storage) handleEditProjectMode(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Storage) renderProjectsView() string {
+func (m Main) renderProjectsView() string {
 	var s strings.Builder
 
 	if len(m.Projects) == 0 {
@@ -243,7 +244,7 @@ func (m Storage) renderProjectsView() string {
 	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, s.String())
 }
 
-func (m Storage) renderCreateNewProjectView() string {
+func (m Main) renderCreateNewProjectView() string {
 	var s strings.Builder
 
 	s.WriteString(ui.FormHeaderStyle.Render("Provide a name for a new Project") + "\n")
@@ -256,7 +257,7 @@ func (m Storage) renderCreateNewProjectView() string {
 	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Top, s.String())
 }
 
-func (m Storage) renderEditProjectView() string {
+func (m Main) renderEditProjectView() string {
 	var s strings.Builder
 
 	project := m.Projects[m.Cursor]

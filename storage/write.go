@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/viktorkharts/projector/models"
+	"github.com/viktorkharts/projector/ui"
 )
 
 type storageData struct {
@@ -12,12 +13,12 @@ type storageData struct {
 	Projects        []models.Project
 }
 
-func Write(db models.Storage) error {
+func Write(m ui.Main) error {
 	storage := os.Getenv("HOME") + "/projector-storage.json"
 
 	data := storageData{
-		SelectedProject: db.SelectedProject,
-		Projects:        db.Projects,
+		SelectedProject: m.SelectedProject,
+		Projects:        m.Projects,
 	}
 
 	bd, err := json.Marshal(data)
